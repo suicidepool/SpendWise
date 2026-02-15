@@ -2,8 +2,9 @@ package com.oms.spendwise.data.repository
 
 import com.oms.spendwise.data.local.dao.CategoryDao
 import com.oms.spendwise.model.entity.Category
+import javax.inject.Inject
 
-class CategoryRepository (
+class CategoryRepository @Inject  constructor(
     private val categoryDao: CategoryDao
 ){
 

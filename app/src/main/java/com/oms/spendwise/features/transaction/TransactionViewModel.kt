@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oms.spendwise.data.repository.CategoryRepository
 import com.oms.spendwise.model.entity.Category
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TransactionViewModel(
+@HiltViewModel
+class TransactionViewModel @Inject constructor(
     val categoryRepository: CategoryRepository
 ): ViewModel() {
     var categories: List<Category> = emptyList()
