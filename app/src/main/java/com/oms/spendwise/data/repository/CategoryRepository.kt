@@ -27,11 +27,11 @@ class CategoryRepository @Inject constructor(
         categoryDao.delete(category)
     }
 
-    suspend fun getCategoriesByType(type: String): SnapshotStateList<Category>{
-        return categoryDao.getCategoriesByType(type).toMutableStateList()
+    suspend fun getCategoriesByType(type: String): List<Category>{
+        return categoryDao.getCategoriesByType(type)
     }
 
-    suspend fun getCategories() : SnapshotStateList<Category>{
-        return categoryDao.getCategories().toMutableStateList()
+    suspend fun getCategories() : List<Category>{
+        return categoryDao.getCategories()
     }
 }
