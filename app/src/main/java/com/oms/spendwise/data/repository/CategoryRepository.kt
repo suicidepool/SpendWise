@@ -1,10 +1,13 @@
 package com.oms.spendwise.data.repository
 
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import com.oms.spendwise.data.local.dao.CategoryDao
 import com.oms.spendwise.model.entity.Category
 import javax.inject.Inject
 
-class CategoryRepository @Inject  constructor(
+class CategoryRepository @Inject constructor(
     private val categoryDao: CategoryDao
 ){
 
@@ -12,7 +15,7 @@ class CategoryRepository @Inject  constructor(
         categoryDao.insert(category)
     }
 
-    suspend fun insertAll(categories: List<Category>){
+    suspend fun insertAll(categories: SnapshotStateList<Category>){
         categoryDao.insertAll(categories)
     }
 
@@ -24,11 +27,11 @@ class CategoryRepository @Inject  constructor(
         categoryDao.delete(category)
     }
 
-    suspend fun getCategoriesByType(type: String): List<Category>{
-        return categoryDao.getCategoriesByType(type)
+    suspend fun getCategoriesByType(type: String): SnapshotStateList<Category>{
+        return categoryDao.getCategoriesByType(type).toMutableStateList()
     }
 
-    suspend fun getCategories() : List<Category>{
-        return categoryDao.getCategories()
+    suspend fun getCategories() : SnapshotStateList<Category>{
+        return categoryDao.getCategories().toMutableStateList()
     }
 }

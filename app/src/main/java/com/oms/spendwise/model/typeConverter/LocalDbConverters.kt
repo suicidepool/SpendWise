@@ -5,7 +5,7 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-class UserConverters {
+class LocalDbConverters {
     @TypeConverter
     fun fromLocalDate(date: LocalDate?): String? = date?.toString()
 

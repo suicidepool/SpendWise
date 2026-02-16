@@ -1,23 +1,34 @@
 package com.oms.spendwise.features.transaction
 
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.util.fastCbrt
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oms.spendwise.data.repository.CategoryRepository
+import com.oms.spendwise.data.repository.TransactionRepository
 import com.oms.spendwise.model.entity.Category
+import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    val categoryRepository: CategoryRepository
+    private val categoryRepository: CategoryRepository,
+    private val transactionRepository: TransactionRepository,
+
 ): ViewModel() {
+    var isLoading by mutableStateOf(true)
     var categories = mutableStateListOf<Category>()
+    var transactions = mutableStateListOf<Transaction>()
 
 
     private suspend fun loadCategories(){
@@ -28,6 +39,78 @@ class TransactionViewModel @Inject constructor(
         }
         Log.d("TAG",categories.size.toString())
     }
+
+    fun addTransaction(
+        userId: Long,
+        categoryId: Long,
+        amount: Double,
+        type: String,
+        note: String = "",
+        transactionDateTime: LocalDateTime,
+        createdAt: LocalDateTime
+    ){
+        isLoading = true
+        viewModelScope.launch {
+            transactionRepository.addTransaction(
+                userId = userId,
+                categoryId = categoryId,
+                amount = amount,
+                type = type,
+                note = note,
+                transactionDateTime = transactionDateTime,
+                createdAt = createdAt
+            )
+            isLoading = false
+            loadTransactions()
+        }
+    }
+
+    fun editTransaction(transaction: Transaction){
+        isLoading = true
+        viewModelScope.launch {
+            transactionRepository.updateTransaction(transaction)
+            isLoading = false
+            loadTransactions()
+        }
+    }
+
+    fun deleteTransaction(transaction: Transaction){
+        isLoading = true
+        viewModelScope.launch {
+            transactionRepository.deleteTransaction(transaction)
+            isLoading = false
+            loadTransactions()
+        }
+    }
+
+    fun loadTransactions(){
+        isLoading = true
+        viewModelScope.launch {
+            val tempTransactions = transactionRepository.getAllTransactions()
+            transactions.addAll(tempTransactions)
+            isLoading = false
+        }
+    }
+
+    fun loadTodayTransactions(){
+        isLoading = true
+        viewModelScope.launch {
+            val tempTransactions = transactionRepository.getAllTransactions(LocalDate.now())
+            transactions.addAll(tempTransactions)
+            isLoading = false
+        }
+    }
+
+    fun loadTransactions(date: LocalDate){
+        isLoading = true
+        viewModelScope.launch {
+            val tempTransactions = transactionRepository.getAllTransactions(date)
+            transactions.addAll(tempTransactions)
+            isLoading = false
+        }
+    }
+
+
 
     private suspend fun saveAllCategoriesInRoomDb(){
         val defaultCategories = listOf(
