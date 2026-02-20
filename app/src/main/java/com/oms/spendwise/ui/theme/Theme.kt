@@ -9,28 +9,58 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+
+    primary = PrimaryBlueLight,
+    onPrimary = Color.Black,
+    primaryContainer = PrimaryBlueDark,
+    onPrimaryContainer = Color.White,
+
+    secondary = ChartBlue,
+    onSecondary = Color.Black,
+
+    background = Color(0xFF0F172A),
+    onBackground = Color(0xFFE5E7EB),
+
+    surface = Color(0xFF1E293B),
+    onSurface = Color(0xFFE5E7EB),
+
+    surfaceVariant = Color(0xFF334155),
+    onSurfaceVariant = Color(0xFFCBD5E1),
+
+    error = ExpenseRed,
+    onError = Color.White,
+
+    outline = Color(0xFF475569)
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
 
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
+private val LightColorScheme = lightColorScheme(
+
+    primary = PrimaryBlue,
+    onPrimary = TextOnPrimary,
+    primaryContainer = PrimaryBlueLight,
+    onPrimaryContainer = Color.White,
+
+    secondary = ChartBlue,
     onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+
+    background = BackgroundPrimary,
+    onBackground = TextPrimary,
+
+    surface = CardBackground,
+    onSurface = TextPrimary,
+
+    surfaceVariant = BackgroundElevated,
+    onSurfaceVariant = TextSecondary,
+
+    error = ExpenseRed,
+    onError = Color.White,
+
+    outline = DividerColor
 )
 
 @Composable

@@ -43,6 +43,7 @@ val ChartPurple = Color(0xFF8B5CF6)
 
 val DividerColor = Color(0xFFE5E7EB)
 val InputFieldBorder = Color(0xFFD1D5DB)
+val InputFieldContainer = Color(0xFFE8E8EF)
 
 /* ========== Disabled States ========== */
 

@@ -1,8 +1,9 @@
 package com.oms.spendwise.ui.theme
 
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
-object Spacing {
+object Dimens {
 
     val ExtraSmall = 4.dp
     val Small = 8.dp
@@ -11,6 +12,7 @@ object Spacing {
     val ExtraLarge = 24.dp
     val Huge = 32.dp
     val ExtraHuge = 40.dp
+    val InputFieldCornerRadius = 12.dp
     val CardCornerRadius = 16.dp
     val ButtonCornerRadius = 12.dp
     val BottomNavHeight = 72.dp

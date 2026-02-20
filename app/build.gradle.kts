@@ -81,4 +81,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.6.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
+    //coil - for image loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+
+    //canhub
+    implementation("com.vanniktech:android-image-cropper:4.5.0")
 }
