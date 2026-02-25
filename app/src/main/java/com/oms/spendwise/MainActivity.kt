@@ -23,6 +23,8 @@ import com.oms.spendwise.data.repository.BudgetRepository
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
+import com.oms.spendwise.features.transaction.add.AddTransactionScreen
+import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
 import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.ui.theme.SpendWiseTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +41,7 @@ class MainActivity : ComponentActivity() {
     lateinit var transactionViewModel: TransactionViewModel
     @Inject
     lateinit var budgetRepository: BudgetRepository
+    lateinit var addTransactionViewModel: AddTransactionViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -46,43 +49,22 @@ class MainActivity : ComponentActivity() {
             profileViewModel = hiltViewModel()
             transactionViewModel = hiltViewModel()
             transactionViewModel.loadTransactions()
-            val scope = rememberCoroutineScope()
-
-
-//            LaunchedEffect(profileViewModel.isLoading) {
-//                if(profileViewModel.isLoading == false){
-//                    if(profileViewModel.user == null){
-//                        Log.d("MESSAGE","user registered nahi hai")
-//                        profileViewModel.addUser(
-//                            name = "Rakesh",
-//                            profilePic = "demo_pic",
-//                            dateOfBirth = LocalDate.of(2006,1,12),
-//                            weekStart = DayOfWeek.SUNDAY,
-//                            currency = "INR"
-//                        )
-//                    } else{
-//                        Log.d("MESSAGE","user  registered hai")
-//                        profileViewModel.userRepository.getUser()
-//                    }
-//                } else{
-//                    Log.d("Message","LOADING DATA")
-//                }
-//            }
+            addTransactionViewModel = hiltViewModel()
 
 
             SpendWiseTheme {
-                if(profileViewModel.user == null){
+                if(!profileViewModel.isLoading && profileViewModel.user == null){
                     CompleteProfileScreen(
                         profileViewModel = profileViewModel,
                         context = this
                     )
                 } else{
-                    if(profileViewModel.user!!.profilePic.isNotEmpty()){
-                        Log.d("hello","ji")
-                        AsyncImage(
-                            model = Uri.parse(profileViewModel.user!!.profilePic),
-                            contentDescription = null,
-                            modifier = Modifier.size(100.dp)
+                    if(!profileViewModel.isLoading && profileViewModel.user!!.profilePic.isNotEmpty()){
+                        AddTransactionScreen(
+                            addTransactionViewModel = addTransactionViewModel,
+                            context = this,
+                            transactionViewModel = transactionViewModel,
+                            profileViewModel = profileViewModel
                         )
                     }
                 }
