@@ -25,7 +25,9 @@ import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
+import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
 import com.oms.spendwise.model.enum.TransactionType
+import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.SpendWiseTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -33,6 +35,7 @@ import kotlinx.coroutines.withContext
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Currency
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -60,11 +63,18 @@ class MainActivity : ComponentActivity() {
                     )
                 } else{
                     if(!profileViewModel.isLoading && profileViewModel.user!!.profilePic.isNotEmpty()){
-                        AddTransactionScreen(
-                            addTransactionViewModel = addTransactionViewModel,
-                            context = this,
-                            transactionViewModel = transactionViewModel,
-                            profileViewModel = profileViewModel
+//                        AddTransactionScreen(
+//                            addTransactionViewModel = addTransactionViewModel,
+//                            context = this,
+//                            transactionViewModel = transactionViewModel,
+//                            profileViewModel = profileViewModel
+//                        )
+
+                        TransactionHistoryScreen(
+                            modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
+                            transactionVM = transactionViewModel,
+                            currency = Currency.getInstance(profileViewModel.user!!.currency),
+                            context = this
                         )
                     }
                 }

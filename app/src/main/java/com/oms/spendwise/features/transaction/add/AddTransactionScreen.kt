@@ -91,6 +91,8 @@ import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.ui.theme.TextHint
+import com.oms.spendwise.utils.formatDate
+import com.oms.spendwise.utils.formatTime
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import okhttp3.internal.format
@@ -120,8 +122,8 @@ fun AddTransactionScreen(
     val scope = rememberCoroutineScope()
 
     val transactionDate = if(addTransactionViewModel.transactionDateTime.toLocalDate() == LocalDate.now())
-        "Today, " + addTransactionViewModel.formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
-    else addTransactionViewModel.formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
+        "Today, " + formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
+    else formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
 
     Scaffold(
         modifier = modifier,
@@ -227,7 +229,7 @@ fun AddTransactionScreen(
 
             TimeSelectSection(
                 modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
-                transactionTime = addTransactionViewModel.formatTime(addTransactionViewModel.transactionDateTime.toLocalTime()),
+                transactionTime = formatTime(addTransactionViewModel.transactionDateTime.toLocalTime()),
                 onTimeChange = {
                     val localTime = LocalTime.of(
                         timePickerState.hour,

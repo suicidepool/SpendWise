@@ -57,17 +57,6 @@ class AddTransactionViewModel @Inject constructor(
             .toLocalDate()
     }
 
-    fun formatDate(localDate: LocalDate): String{
-        val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy")
-        return localDate.format(formatter)
-    }
-
-    fun formatTime(localTime: LocalTime): String{
-        val formatter = DateTimeFormatter.ofPattern("hh:mm a", Locale.ENGLISH)
-
-        return localTime.format(formatter)
-    }
-
 
     fun onDigitClick(digit: String){
         if(operator == null)

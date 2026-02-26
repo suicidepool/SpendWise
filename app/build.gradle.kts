@@ -86,4 +86,8 @@ dependencies {
 
     //canhub
     implementation("com.vanniktech:android-image-cropper:4.5.0")
+
+    // Navigation
+    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
 }

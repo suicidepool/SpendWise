@@ -28,7 +28,9 @@ class TransactionViewModel @Inject constructor(
 ): ViewModel() {
     var isLoading by mutableStateOf(true)
     var categories = mutableStateListOf<Category>()
-    var transactions = mutableStateListOf<Transaction>()
+    var transactions by mutableStateOf<Map<LocalDate, List<Transaction>>>(emptyMap())
+        private set
+    var distinctDates by mutableStateOf<List<LocalDate>>(emptyList())
 
 
     private suspend fun loadCategories(){
@@ -64,6 +66,26 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun getTotalIncome(date: LocalDate): Double{
+        var total = 0.0
+        transactions[date]?.let {
+            it.forEach {
+                if(it.type == TransactionType.INCOME.value) total += it.amount
+            }
+        }
+        return total
+    }
+
+    fun getTotalExpense(date: LocalDate): Double{
+        var total = 0.0
+        transactions[date]?.let {
+            it.forEach { transaction ->
+                if(transaction.type == TransactionType.EXPENSE.value) total += transaction.amount
+            }
+        }
+        return total
+    }
+
     fun editTransaction(transaction: Transaction){
         isLoading = true
         viewModelScope.launch {
@@ -85,29 +107,33 @@ class TransactionViewModel @Inject constructor(
     fun loadTransactions(){
         isLoading = true
         viewModelScope.launch {
-            val tempTransactions = transactionRepository.getAllTransactions()
-            transactions.addAll(tempTransactions)
+            val allTransactions = transactionRepository.getAllTransactions()
+            transactions = allTransactions.groupBy { it.transactionDateTime.toLocalDate() }
+            distinctDates = allTransactions
+                .map { it.transactionDateTime.toLocalDate() }
+                .distinct()
+                .sortedDescending()
             isLoading = false
         }
     }
 
-    fun loadTodayTransactions(){
-        isLoading = true
-        viewModelScope.launch {
-            val tempTransactions = transactionRepository.getAllTransactions(LocalDate.now())
-            transactions.addAll(tempTransactions)
-            isLoading = false
-        }
-    }
+//    fun loadTodayTransactions(){
+//        isLoading = true
+//        viewModelScope.launch {
+//            val tempTransactions = transactionRepository.getAllTransactions(LocalDate.now())
+//            transactions.addAll(tempTransactions)
+//            isLoading = false
+//        }
+//    }
 
-    fun loadTransactions(date: LocalDate){
-        isLoading = true
-        viewModelScope.launch {
-            val tempTransactions = transactionRepository.getAllTransactions(date)
-            transactions.addAll(tempTransactions)
-            isLoading = false
-        }
-    }
+//    fun loadTransactions(date: LocalDate){
+//        isLoading = true
+//        viewModelScope.launch {
+//            val tempTransactions = transactionRepository.getAllTransactions(date)
+//            transactions.addAll(tempTransactions)
+//            isLoading = false
+//        }
+//    }
 
 
 
