@@ -107,23 +107,62 @@ import kotlin.math.round
 @Composable
 fun AddTransactionScreen(
     modifier: Modifier = Modifier,
-    transaction: Transaction? = null,
+    transactionId: Long?,
     addTransactionViewModel: AddTransactionViewModel,
     transactionViewModel: TransactionViewModel,
     profileViewModel: ProfileViewModel,
+    onBack: () -> Unit,
     context: Context
 ) {
+    var transaction by remember { mutableStateOf<Transaction?>(null) }
+    LaunchedEffect(Unit) {
+        transactionId?.let {
+            transaction = transactionViewModel.getTransaction(transactionId)
+            transaction?.let {
+                addTransactionViewModel.onNoteChange(it.note)
+                addTransactionViewModel.setAmount(it.amount)
+                addTransactionViewModel.onTransactionDateTimeChange(it.transactionDateTime)
+                addTransactionViewModel.onTransactionTypeChange(
+                    if(it.type == TransactionType.INCOME.value){
+                        TransactionType.INCOME
+                    } else {
+                        TransactionType.EXPENSE
+                    }
+                )
+                val category: Category? = transactionViewModel.categories.find { category -> category.categoryId == it.categoryId }
+                category?.let { category ->
+                    addTransactionViewModel.onCategoryChange(
+                        category
+                    )
+                }
+            }
+        }
+    }
     val datePickerState = rememberDatePickerState()
-    val timePickerState = rememberTimePickerState(
-        initialHour = addTransactionViewModel.transactionDateTime.toLocalTime().hour,
-        initialMinute = addTransactionViewModel.transactionDateTime.toLocalTime().minute,
-        is24Hour = false,
-    )
+    val timePickerState = if(transaction != null){
+        rememberTimePickerState(
+            initialHour = transaction!!.transactionDateTime.toLocalTime().hour,
+            initialMinute = transaction!!.transactionDateTime.toLocalTime().minute,
+            is24Hour = false,
+        )
+    } else {
+        rememberTimePickerState(
+            initialHour = addTransactionViewModel.transactionDateTime.toLocalTime().hour,
+            initialMinute = addTransactionViewModel.transactionDateTime.toLocalTime().minute,
+            is24Hour = false,
+        )
+    }
     val scope = rememberCoroutineScope()
 
-    val transactionDate = if(addTransactionViewModel.transactionDateTime.toLocalDate() == LocalDate.now())
-        "Today, " + formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
-    else formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
+    val transactionDate = if(transaction != null){
+        if(transaction!!.transactionDateTime.toLocalDate() == LocalDate.now())
+            "Today, " + formatDate(transaction!!.transactionDateTime.toLocalDate())
+        else formatDate(transaction!!.transactionDateTime.toLocalDate())
+    } else {
+        if(addTransactionViewModel.transactionDateTime.toLocalDate() == LocalDate.now())
+            "Today, " + formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
+        else formatDate(addTransactionViewModel.transactionDateTime.toLocalDate())
+    }
 
     Scaffold(
         modifier = modifier,
@@ -131,8 +170,9 @@ fun AddTransactionScreen(
             TopBar(
                 modifier = Modifier
                     .statusBarsPadding(),
-                title = if(transaction == null) "Add Transaction" else "Edit Transaction"
-            ) { }
+                title = if(transaction == null) "Add Transaction" else "Edit Transaction",
+                onCancel = onBack
+            )
         },
         bottomBar = {
             CalculatorKeypad(
@@ -157,15 +197,26 @@ fun AddTransactionScreen(
                             ).show()
                         }
                     } else {
-                        transactionViewModel.addTransaction(
-                            userId = profileViewModel.user!!.userId,
-                            categoryId = addTransactionViewModel.selectedCategory!!.categoryId,
-                            amount = addTransactionViewModel.firstOperand.toDouble(),
-                            type = addTransactionViewModel.selectedCategory!!.type,
-                            note = addTransactionViewModel.note,
-                            transactionDateTime = addTransactionViewModel.transactionDateTime,
-                            createdAt = LocalDateTime.now(),
-                        )
+                        if(transaction == null)
+                            transactionViewModel.addTransaction(
+                                userId = profileViewModel.user!!.userId,
+                                categoryId = addTransactionViewModel.selectedCategory!!.categoryId,
+                                amount = addTransactionViewModel.firstOperand.toDouble(),
+                                type = addTransactionViewModel.selectedCategory!!.type,
+                                note = addTransactionViewModel.note,
+                                transactionDateTime = addTransactionViewModel.transactionDateTime,
+                                createdAt = LocalDateTime.now(),
+                            )
+                        else
+                            transactionViewModel.editTransaction(
+                                transaction!!.copy(
+                                    amount = addTransactionViewModel.firstOperand.toDouble(),
+                                    categoryId = addTransactionViewModel.selectedCategory!!.categoryId,
+                                    transactionDateTime = addTransactionViewModel.transactionDateTime,
+                                    note = addTransactionViewModel.note
+                                )
+                            )
+                        onBack()
                     }
                 }
             )
@@ -179,7 +230,10 @@ fun AddTransactionScreen(
             TransactionTypeSelectSection(
                 modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
                 transactionType = addTransactionViewModel.transactionType,
-                onTransactionTypeChange = addTransactionViewModel.onTransactionTypeChange
+                onTransactionTypeChange = {
+                    addTransactionViewModel.onTransactionTypeChange(it)
+                    addTransactionViewModel.onCategoryChange(null)
+                }
             )
 
             Spacer(Modifier.height(12.dp))

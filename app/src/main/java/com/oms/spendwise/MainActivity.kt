@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -15,18 +16,24 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.room.util.TableInfo
 import coil.compose.AsyncImage
+import coil.size.Dimension
 import com.oms.spendwise.data.repository.BudgetRepository
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
+import com.oms.spendwise.features.transaction.details.TransactionDetailsScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
+import com.oms.spendwise.features.transaction.history.TransactionHistoryViewModel
 import com.oms.spendwise.model.enum.TransactionType
+import com.oms.spendwise.navigation.Screen
+import com.oms.spendwise.navigation.ScreenNavHost
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.SpendWiseTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +52,7 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var budgetRepository: BudgetRepository
     lateinit var addTransactionViewModel: AddTransactionViewModel
+    lateinit var transactionHistoryViewModel: TransactionHistoryViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -53,6 +61,8 @@ class MainActivity : ComponentActivity() {
             transactionViewModel = hiltViewModel()
             transactionViewModel.loadTransactions()
             addTransactionViewModel = hiltViewModel()
+            transactionHistoryViewModel = hiltViewModel()
+            val context = applicationContext
 
 
             SpendWiseTheme {
@@ -70,12 +80,30 @@ class MainActivity : ComponentActivity() {
 //                            profileViewModel = profileViewModel
 //                        )
 
-                        TransactionHistoryScreen(
-                            modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
-                            transactionVM = transactionViewModel,
-                            currency = Currency.getInstance(profileViewModel.user!!.currency),
-                            context = this
-                        )
+//                        TransactionHistoryScreen(
+//                            modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
+//                            transactionVM = transactionViewModel,
+//                            currency = Currency.getInstance(profileViewModel.user!!.currency),
+//                            context = this
+//                        )
+
+//                        TransactionDetailsScreen(
+//                            modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
+//
+//                        )
+//                        Box(
+//                            modifier = Modifier
+//                                .background(color = Color.Red)
+//                        ){
+                            ScreenNavHost(
+                                profileViewModel = profileViewModel,
+                                transactionViewModel = transactionViewModel,
+                                addTransactionViewModel = addTransactionViewModel,
+                                transactionHistoryViewModel = transactionHistoryViewModel,
+                                context = context
+                            )
+//                        }
+
                     }
                 }
             }

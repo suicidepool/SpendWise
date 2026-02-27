@@ -117,6 +117,14 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    suspend fun getTransaction(id: Long): Transaction{
+        return transactionRepository.getTransaction(id)
+    }
+
+    fun getCategory(categoryId: Long): Category?{
+        return categories.find { it.categoryId == categoryId }
+    }
+
 //    fun loadTodayTransactions(){
 //        isLoading = true
 //        viewModelScope.launch {

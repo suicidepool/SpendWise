@@ -36,7 +36,7 @@ val WarningOrange = Color(0xFFF59E0B)
 
 val ChartBlue = Color(0xFF3B82F6)
 val ChartGreen = Color(0xFF10B981)
-val ChartOrange = Color(0xFFF97316)
+val RedButton = Color(0xFFDC2626)
 val ChartPurple = Color(0xFF8B5CF6)
 
 /* ========== Divider & Borders ========== */

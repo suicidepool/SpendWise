@@ -38,12 +38,18 @@ class AddTransactionViewModel @Inject constructor(
         this.transactionDateTime = localDateTime
     }
 
-    val onCategoryChange = {category: Category ->
+    fun setAmount(amount: Double){
+        calculator.setCurrentInput(amount)
+        firstOperand = amount.toString()
+        secondOperand = ""
+        operator = null
+    }
+
+    val onCategoryChange = {category: Category? ->
         this.selectedCategory = category
     }
 
     val onTransactionTypeChange = {transactionType: TransactionType ->
-        selectedCategory = null
         this.transactionType = transactionType
     }
 

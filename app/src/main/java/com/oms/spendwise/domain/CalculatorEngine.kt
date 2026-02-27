@@ -15,6 +15,13 @@ class CalculatorEngine @Inject constructor() {
         ADD("+"), SUBTRACT("-"), MULTIPLY("×"), DIVIDE("÷")
     }
 
+    fun setCurrentInput(input: Double){
+        currentInput = input.toString()
+        firstOperand = ""
+        operator = null
+        resetInput = false
+    }
+
     fun inputDigit(digit: String): String{
         if(resetInput){
             currentInput = digit
