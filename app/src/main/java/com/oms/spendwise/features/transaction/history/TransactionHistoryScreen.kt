@@ -71,12 +71,10 @@ fun TransactionHistoryScreen(
     modifier: Modifier = Modifier,
     transactionVM: TransactionViewModel,
     currency: Currency,
-    context: Context
+    context: Context,
+    transactionHistoryVm: TransactionHistoryViewModel,
+    onItemClick: (transactionId: Long) -> Unit
 ) {
-
-    var transactionTypeFilter by remember { mutableStateOf<TransactionType?>(null) }
-    var searchVisibility by remember {mutableStateOf(false)}
-    var searchText by remember { mutableStateOf("") }
 
     Scaffold(
         modifier = modifier,
@@ -84,12 +82,12 @@ fun TransactionHistoryScreen(
             TopBar(
                 modifier = Modifier
                     .statusBarsPadding(),
-                transactionTypeFilter = transactionTypeFilter,
-                onTransactionTypeFilterChange = {transactionTypeFilter = it},
-                searchBarVisibility = searchVisibility,
-                toggleSearchBarVisibility = {searchVisibility = !searchVisibility},
-                searchText = searchText,
-                onSearchTextChange = {searchText = it}
+                transactionTypeFilter = transactionHistoryVm.transactionTypeFilter,
+                onTransactionTypeFilterChange = transactionHistoryVm.onTransactionTypeFilterChange,
+                searchBarVisibility = transactionHistoryVm.searchVisibility,
+                toggleSearchBarVisibility = {transactionHistoryVm.onSearchVisibilityChange(!transactionHistoryVm.searchVisibility)},
+                searchText = transactionHistoryVm.searchText,
+                onSearchTextChange = transactionHistoryVm.onSearchTextChange
             ) { }
         }
     ) { innerPadding ->
@@ -97,19 +95,21 @@ fun TransactionHistoryScreen(
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            if(searchVisibility && searchText.isNotEmpty()){
+            if(transactionHistoryVm.searchVisibility && transactionHistoryVm.searchText.isNotEmpty()){
                 SearchedTransactions(
                     transactionVM = transactionVM,
                     currency = currency,
-                    searchedText = searchText,
-                    context = context
+                    searchedText = transactionHistoryVm.searchText,
+                    context = context,
+                    onClick = onItemClick
                 )
             } else {
                 FilteredTransactions(
                     transactionVM = transactionVM,
                     currency = currency,
-                    transactionTypeFilter = transactionTypeFilter,
-                    context = context
+                    transactionTypeFilter = transactionHistoryVm.transactionTypeFilter,
+                    context = context,
+                    onClick = onItemClick
                 )
             }
         }
@@ -122,7 +122,8 @@ fun SearchedTransactions(
     transactionVM: TransactionViewModel,
     searchedText: String,
     currency: Currency,
-    context: Context
+    context: Context,
+    onClick: (transactionId: Long) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth()
@@ -161,7 +162,7 @@ fun SearchedTransactions(
                             category = transactionCategory,
                             currency = currency,
                             context = context,
-                            onClick = {}
+                            onClick = {onClick(transaction.transactionId)}
                         )
                         Spacer(Modifier.height(14.dp))
                     }
@@ -177,7 +178,8 @@ fun FilteredTransactions(
     transactionVM: TransactionViewModel,
     transactionTypeFilter: TransactionType?,
     currency: Currency,
-    context: Context
+    context: Context,
+    onClick: (transactionId: Long) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxWidth()
@@ -199,7 +201,7 @@ fun FilteredTransactions(
                     )
                     Spacer(Modifier.height(14.dp))
                 } else {
-                    val filteredItemCnt = transactions.count{it.type == transactionTypeFilter!!.value}
+                    val filteredItemCnt = transactions.count{it.type == transactionTypeFilter.value}
                     if(filteredItemCnt > 0){
                         Spacer(Modifier.height(2.dp))
                         Text(
@@ -227,16 +229,16 @@ fun FilteredTransactions(
                             category = transactionCategory,
                             currency = currency,
                             context = context,
-                            onClick = {}
+                            onClick = {onClick(transaction.transactionId)}
                         )
                         Spacer(Modifier.height(14.dp))
-                    } else if(transactionTypeFilter!!.value == transactionCategory.type) {
+                    } else if(transactionTypeFilter.value == transactionCategory.type) {
                         TransactionItem(
                             transaction = transaction,
                             category = transactionCategory,
                             currency = currency,
                             context = context,
-                            onClick = {}
+                            onClick = {onClick(transaction.transactionId)}
                         )
                         Spacer(Modifier.height(14.dp))
                     }
