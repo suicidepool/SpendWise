@@ -117,23 +117,25 @@ fun AddTransactionScreen(
     var transaction by remember { mutableStateOf<Transaction?>(null) }
     LaunchedEffect(Unit) {
         transactionId?.let {
-            transaction = transactionViewModel.getTransaction(transactionId)
-            transaction?.let {
-                addTransactionViewModel.onNoteChange(it.note)
-                addTransactionViewModel.setAmount(it.amount)
-                addTransactionViewModel.onTransactionDateTimeChange(it.transactionDateTime)
-                addTransactionViewModel.onTransactionTypeChange(
-                    if(it.type == TransactionType.INCOME.value){
-                        TransactionType.INCOME
-                    } else {
-                        TransactionType.EXPENSE
-                    }
-                )
-                val category: Category? = transactionViewModel.categories.find { category -> category.categoryId == it.categoryId }
-                category?.let { category ->
-                    addTransactionViewModel.onCategoryChange(
-                        category
+            if(transactionId != -1L){
+                transaction = transactionViewModel.getTransaction(transactionId)
+                transaction?.let {
+                    addTransactionViewModel.onNoteChange(it.note)
+                    addTransactionViewModel.setAmount(it.amount)
+                    addTransactionViewModel.onTransactionDateTimeChange(it.transactionDateTime)
+                    addTransactionViewModel.onTransactionTypeChange(
+                        if(it.type == TransactionType.INCOME.value){
+                            TransactionType.INCOME
+                        } else {
+                            TransactionType.EXPENSE
+                        }
                     )
+                    val category: Category? = transactionViewModel.categories.find { category -> category.categoryId == it.categoryId }
+                    category?.let { category ->
+                        addTransactionViewModel.onCategoryChange(
+                            category
+                        )
+                    }
                 }
             }
         }
@@ -171,7 +173,10 @@ fun AddTransactionScreen(
                 modifier = Modifier
                     .statusBarsPadding(),
                 title = if(transaction == null) "Add Transaction" else "Edit Transaction",
-                onCancel = onBack
+                onCancel = {
+                    addTransactionViewModel.clearData()
+                    onBack()
+                }
             )
         },
         bottomBar = {
@@ -216,6 +221,7 @@ fun AddTransactionScreen(
                                     note = addTransactionViewModel.note
                                 )
                             )
+                        addTransactionViewModel.clearData()
                         onBack()
                     }
                 }

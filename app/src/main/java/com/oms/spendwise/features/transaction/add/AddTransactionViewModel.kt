@@ -112,6 +112,13 @@ class AddTransactionViewModel @Inject constructor(
                 "0"
             }
         }
+    }
 
+    fun clearData(){
+        onClearClick()
+        onCategoryChange(null)
+        onTransactionTypeChange(TransactionType.EXPENSE)
+        onNoteChange("")
+        onTransactionDateTimeChange(LocalDateTime.now())
     }
 }

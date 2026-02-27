@@ -102,6 +102,7 @@ import kotlin.contracts.contract
 fun CompleteProfileScreen(
     modifier: Modifier = Modifier,
     profileViewModel: ProfileViewModel,
+    onContinue: () -> Unit,
     context: Context
 ){
     var profileImage by remember { mutableStateOf<Uri?>(null) }
@@ -141,6 +142,7 @@ fun CompleteProfileScreen(
                     )
                 else
                     Toast.makeText(context,"Please Complete all Fields 🥺", Toast.LENGTH_SHORT).show()
+                onContinue()
             }
         }
     ) {innerPadding ->

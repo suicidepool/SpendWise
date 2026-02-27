@@ -9,13 +9,19 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.oms.spendwise.features.budget.BudgetScreen
+import com.oms.spendwise.features.dashboard.DashboardScreen
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
+import com.oms.spendwise.features.profile.profile.ProfileScreen
+import com.oms.spendwise.features.stats.StatsScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
@@ -27,17 +33,17 @@ import java.util.Currency
 
 @Composable
 fun ScreenNavHost(
+    navController: NavHostController,
     profileViewModel: ProfileViewModel,
     transactionViewModel: TransactionViewModel,
     addTransactionViewModel: AddTransactionViewModel,
     transactionHistoryViewModel: TransactionHistoryViewModel,
     context: Context
 ) {
-    val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination = Screen.TransactionHistoryScreen.route,
+        startDestination = Screen.DashboardScreen.route,
         enterTransition = {
             slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Left,
@@ -68,7 +74,10 @@ fun ScreenNavHost(
         ){
             CompleteProfileScreen(
                 profileViewModel = profileViewModel,
-                context = context
+                context = context,
+                onContinue = {
+                    navController.navigate(Screen.TransactionHistoryScreen.route)
+                }
             )
         }
 
@@ -96,16 +105,17 @@ fun ScreenNavHost(
         composable(
             route = Screen.TransactionHistoryScreen.route
         ){
-            TransactionHistoryScreen(
-                modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
-                transactionVM = transactionViewModel,
-                currency = Currency.getInstance(profileViewModel.user!!.currency),
-                context = context,
-                onItemClick = { transactionId ->
-                    navController.navigate(Screen.TransactionDetailsScreen.createRoute(transactionId))
-                },
-                transactionHistoryVm = transactionHistoryViewModel
-            )
+            if(profileViewModel.user != null)
+                TransactionHistoryScreen(
+                    modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
+                    transactionVM = transactionViewModel,
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    context = context,
+                    onItemClick = { transactionId ->
+                        navController.navigate(Screen.TransactionDetailsScreen.createRoute(transactionId))
+                    },
+                    transactionHistoryVm = transactionHistoryViewModel
+                )
         }
 
         composable(
@@ -127,6 +137,30 @@ fun ScreenNavHost(
                 onEditClick = {navController.navigate(Screen.AddTransactionScreen.createRoute(id))},
                 context = context
             )
+        }
+
+        composable(
+            route = Screen.DashboardScreen.route
+        ){
+            DashboardScreen()
+        }
+
+        composable(
+            route = Screen.StatsScreen.route
+        ){
+            StatsScreen()
+        }
+
+        composable(
+            route = Screen.BudgetScreen.route
+        ){
+            BudgetScreen()
+        }
+
+        composable(
+            route = Screen.ProfileScreen.route
+        ){
+            ProfileScreen()
         }
     }
 }
