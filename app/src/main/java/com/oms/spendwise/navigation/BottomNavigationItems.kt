@@ -8,7 +8,7 @@ sealed class BottomNavigationItem (val name: String, val icon: Int, val route: S
     object Dashboard : BottomNavigationItem(
         name = "Dashboard",
         icon = R.drawable.icon_dashboard,
-        route = Screen.TransactionHistoryScreen.route
+        route = Screen.DashboardScreen.route
     )
     object Stats : BottomNavigationItem(
         name = "Stats",

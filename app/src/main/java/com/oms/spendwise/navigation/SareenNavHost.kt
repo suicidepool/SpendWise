@@ -3,21 +3,16 @@ package com.oms.spendwise.navigation
 import android.content.Context
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.oms.spendwise.features.budget.BudgetScreen
-import com.oms.spendwise.features.dashboard.DashboardScreen
+import com.oms.spendwise.features.transaction.dashboard.DashboardScreen
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.profile.profile.ProfileScreen
@@ -142,7 +137,18 @@ fun ScreenNavHost(
         composable(
             route = Screen.DashboardScreen.route
         ){
-            DashboardScreen()
+            if(profileViewModel.user != null)
+                DashboardScreen(
+                    transactionViewModel = transactionViewModel,
+                    currency =  Currency.getInstance(profileViewModel.user!!.currency),
+                    onTransactionItemClick = { id ->
+                        navController.navigate(Screen.TransactionDetailsScreen.createRoute(id))
+                    },
+                    onSeeAllClick = {
+                        navController.navigate(Screen.TransactionHistoryScreen.route)
+                    },
+                    context = context
+                )
         }
 
         composable(
