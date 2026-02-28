@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oms.spendwise.data.repository.CategoryRepository
 import com.oms.spendwise.data.repository.TransactionRepository
+import com.oms.spendwise.domain.TransactionCalculator
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
@@ -24,6 +25,7 @@ import javax.inject.Inject
 class TransactionViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val transactionRepository: TransactionRepository,
+    private val transactionCalculator: TransactionCalculator
 
 ): ViewModel() {
     var isLoading by mutableStateOf(true)
@@ -39,6 +41,10 @@ class TransactionViewModel @Inject constructor(
             saveAllCategoriesInRoomDb()
             categories.addAll(categoryRepository.getCategories())
         }
+    }
+
+    fun getTransactionList(): List<Transaction> {
+        return transactions.values.flatMap { it }
     }
 
     fun addTransaction(
@@ -123,6 +129,58 @@ class TransactionViewModel @Inject constructor(
 
     fun getCategory(categoryId: Long): Category?{
         return categories.find { it.categoryId == categoryId }
+    }
+
+    fun getTotalBalance() : Double{
+        return transactionCalculator.calculateTotalBalance(getTransactionList())
+    }
+
+    fun getMonthlyIncome(
+        month: Int,
+        year: Int
+    ) : Double{
+        return transactionCalculator.calculateMonthlyIncome(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
+    }
+
+    fun getMonthlyExpense(
+        month: Int,
+        year: Int
+    ) : Double{
+        return transactionCalculator.calculateMonthlyExpense(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
+    }
+
+    fun getIncomeIncrementFromLastMonth(
+        month: Int,
+        year: Int
+    ): Double{
+        return transactionCalculator.calculateIncomeIncrementFromLastMonth(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
+    }
+
+    fun getExpenseIncrementFromLastMonth(
+        month: Int,
+        year: Int
+    ): Double{
+        return transactionCalculator.calculateExpenseIncrementFromLastMonth(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
+    }
+
+    fun getBalanceIncrementFromLastMonth(): Double{
+        return transactionCalculator.calculateBalanceIncrementFromLastMonth(getTransactionList())
     }
 
 //    fun loadTodayTransactions(){
