@@ -169,6 +169,9 @@ fun SearchedTransactions(
                 }
             }
         }
+        items(1){
+            Spacer(Modifier.height(110.dp))
+        }
     }
 }
 
@@ -244,6 +247,9 @@ fun FilteredTransactions(
                     }
                 }
             }
+        }
+        items(1){
+            Spacer(Modifier.height(110.dp))
         }
     }
 }
