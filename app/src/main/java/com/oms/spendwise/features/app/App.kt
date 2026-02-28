@@ -1,6 +1,8 @@
 package com.oms.spendwise.features.app
 
 import android.content.Context
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -32,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.oms.spendwise.features.profile.ProfileViewModel
@@ -56,12 +60,22 @@ fun App(
     addTransactionViewModel: AddTransactionViewModel,
     transactionHistoryViewModel: TransactionHistoryViewModel,
     screenNavigationViewModel: ScreenNavigationViewModel,
-    context: Context
+    context: Context,
 ) {
     val scope = rememberCoroutineScope()
 
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val current = navBackStackEntry?.destination?.route
+    LaunchedEffect(current) {
+        when(current){
+            BottomNavigationItem.Dashboard.route -> screenNavigationViewModel.switchSelectedTab(BottomNavigationItem.Dashboard)
+            BottomNavigationItem.Stats.route -> screenNavigationViewModel.switchSelectedTab(BottomNavigationItem.Stats)
+            BottomNavigationItem.Budget.route -> screenNavigationViewModel.switchSelectedTab(BottomNavigationItem.Budget)
+            BottomNavigationItem.Profile.route -> screenNavigationViewModel.switchSelectedTab(BottomNavigationItem.Profile)
+        }
+    }
+
 
 
     Box(
@@ -85,6 +99,13 @@ fun App(
                     scope.launch {
                         navController.navigate(route)
                     }
+                },
+                navBackStackEntry = navBackStackEntry,
+                popBackStack = {
+                    navController.popBackStack(
+                        navController.graph.startDestinationId,
+                        true
+                    )
                 }
             )
         }
@@ -95,11 +116,13 @@ fun App(
 private fun BottomBar(
     modifier: Modifier = Modifier,
     screenNavigationVM: ScreenNavigationViewModel,
-    switchScreen: (route: String) -> Unit
+    switchScreen: (route: String) -> Unit,
+    navBackStackEntry: NavBackStackEntry?,
+    popBackStack: () -> Unit
 ) {
-
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
             .navigationBarsPadding(),
     ) {
         HorizontalDivider(
@@ -122,8 +145,11 @@ private fun BottomBar(
                 icon = BottomNavigationItem.Dashboard.icon,
                 name = BottomNavigationItem.Dashboard.name,
                 onClick = {
-                    screenNavigationVM.switchSelectedTab(BottomNavigationItem.Dashboard)
-                    switchScreen(BottomNavigationItem.Dashboard.route)
+                    if(screenNavigationVM.selectedTab.route != navBackStackEntry?.destination?.route || screenNavigationVM.selectedTab != BottomNavigationItem.Dashboard){
+                        screenNavigationVM.switchSelectedTab(BottomNavigationItem.Dashboard)
+                        switchScreen(BottomNavigationItem.Dashboard.route)
+                        popBackStack()
+                    }
                 }
             )
             BottomNavigationItem(
@@ -132,8 +158,10 @@ private fun BottomBar(
                 icon = BottomNavigationItem.Stats.icon,
                 name = BottomNavigationItem.Stats.name,
                 onClick = {
-                    screenNavigationVM.switchSelectedTab(BottomNavigationItem.Stats)
-                    switchScreen(BottomNavigationItem.Stats.route)
+                    if(screenNavigationVM.selectedTab.route != navBackStackEntry?.destination?.route || screenNavigationVM.selectedTab != BottomNavigationItem.Stats) {
+                        screenNavigationVM.switchSelectedTab(BottomNavigationItem.Stats)
+                        switchScreen(BottomNavigationItem.Stats.route)
+                    }
                 }
             )
             Box(Modifier.weight(1f))
@@ -143,8 +171,10 @@ private fun BottomBar(
                 icon = BottomNavigationItem.Budget.icon,
                 name = BottomNavigationItem.Budget.name,
                 onClick = {
-                    screenNavigationVM.switchSelectedTab(BottomNavigationItem.Budget)
-                    switchScreen(BottomNavigationItem.Budget.route)
+                    if(screenNavigationVM.selectedTab.route != navBackStackEntry?.destination?.route || screenNavigationVM.selectedTab != BottomNavigationItem.Budget) {
+                        screenNavigationVM.switchSelectedTab(BottomNavigationItem.Budget)
+                        switchScreen(BottomNavigationItem.Budget.route)
+                    }
                 }
             )
 
@@ -154,8 +184,10 @@ private fun BottomBar(
                 icon = BottomNavigationItem.Profile.icon,
                 name = BottomNavigationItem.Profile.name,
                 onClick = {
-                    screenNavigationVM.switchSelectedTab(BottomNavigationItem.Profile)
-                    switchScreen(BottomNavigationItem.Profile.route)
+                    if(screenNavigationVM.selectedTab.route != navBackStackEntry?.destination?.route || screenNavigationVM.selectedTab != BottomNavigationItem.Profile) {
+                        screenNavigationVM.switchSelectedTab(BottomNavigationItem.Profile)
+                        switchScreen(BottomNavigationItem.Profile.route)
+                    }
                 }
             )
         }
