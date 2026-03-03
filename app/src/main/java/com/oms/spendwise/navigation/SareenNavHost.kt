@@ -16,13 +16,14 @@ import com.oms.spendwise.features.transaction.dashboard.DashboardScreen
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.profile.profile.ProfileScreen
-import com.oms.spendwise.features.stats.StatsScreen
+import com.oms.spendwise.features.transaction.stats.StatsScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
 import com.oms.spendwise.features.transaction.details.TransactionDetailsScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryViewModel
+import com.oms.spendwise.features.transaction.stats.StatsScreenViewModel
 import com.oms.spendwise.ui.theme.Dimens
 import java.util.Currency
 
@@ -33,6 +34,7 @@ fun ScreenNavHost(
     transactionViewModel: TransactionViewModel,
     addTransactionViewModel: AddTransactionViewModel,
     transactionHistoryViewModel: TransactionHistoryViewModel,
+    statsScreenViewModel: StatsScreenViewModel,
     context: Context
 ) {
 
@@ -153,8 +155,14 @@ fun ScreenNavHost(
 
         composable(
             route = Screen.StatsScreen.route
-        ){
-            StatsScreen()
+        ) {
+            if (profileViewModel.user != null)
+                StatsScreen(
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    statsScreenViewModel = statsScreenViewModel,
+                    transactionViewModel = transactionViewModel,
+                    onCalendarClick = {}
+                )
         }
 
         composable(

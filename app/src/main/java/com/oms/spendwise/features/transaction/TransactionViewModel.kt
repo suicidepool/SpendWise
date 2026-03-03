@@ -17,8 +17,11 @@ import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
+import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
 
 @HiltViewModel
@@ -181,6 +184,160 @@ class TransactionViewModel @Inject constructor(
 
     fun getBalanceIncrementFromLastMonth(): Double{
         return transactionCalculator.calculateBalanceIncrementFromLastMonth(getTransactionList())
+    }
+
+    fun getTodayTotalBalance(): Double{
+        return transactionCalculator.calculateDayTotalBalance(getTransactionList())
+    }
+
+    fun getCurrentWeekTotalBalance(): Double{
+        return transactionCalculator.calculateWeekTotalBalance(getTransactionList())
+    }
+    fun getCurrentMonthTotalBalance(): Double{
+        return transactionCalculator.calculateMonthTotalBalance(getTransactionList())
+    }
+
+    fun getCurrentYearTotalBalance(): Double{
+        return transactionCalculator.calculateYearTotalBalance(getTransactionList())
+    }
+
+    fun getDayBalanceIncrementFromLastDay(): Double{
+        return transactionCalculator.calculateDayBalanceIncrementFromLastDay(getTransactionList())
+    }
+
+    fun getWeekBalanceIncrementFromLastWeek(): Double{
+        return transactionCalculator.calculateWeekBalanceIncrementFromLastWeek(getTransactionList())
+    }
+
+    fun getMonthBalanceIncrementFromLastMonth(): Double{
+        return transactionCalculator.calculateMonthBalanceIncrementFromLastMonth(getTransactionList())
+    }
+
+    fun getYearBalanceIncrementFromLastYear(): Double{
+        return transactionCalculator.calculateYearBalanceIncrementFromLastYear(getTransactionList())
+    }
+
+    fun getDayTotalIncome() : Double{
+        return transactionCalculator.calculateDayTotalIncome(getTransactionList())
+    }
+
+    fun getDayTotalIncomeFromLastDay() : Double{
+        return  transactionCalculator.calculateDayTotalIncomeFromLastDay(getTransactionList())
+    }
+
+    fun getDayTotalExpense() : Double{
+        return transactionCalculator.calculateDayTotalExpense(getTransactionList())
+    }
+
+    fun getDayTotalExpenseFromLastDay() : Double{
+        return transactionCalculator.calculateDayTotalExpenseFromLastDay(getTransactionList())
+    }
+
+    fun getWeekTotalIncome(): Double{
+        return transactionCalculator.calculateWeekTotalIncome(getTransactionList())
+    }
+
+    fun getWeekTotalIncomeFromLastWeek(): Double{
+        return transactionCalculator.calculateWeekTotalIncomeFromLastWeek(getTransactionList())
+    }
+
+    fun getWeekTotalExpense(): Double{
+        return transactionCalculator.calculateWeekTotalExpense(getTransactionList())
+    }
+
+    fun getWeekTotalExpenseFromLastWeek(): Double{
+        return transactionCalculator.calculateWeekTotalExpenseFromLastWeek(getTransactionList())
+    }
+
+    fun getMonthTotalIncome(): Double{
+        return transactionCalculator.calculateMonthTotalIncome(getTransactionList())
+    }
+
+    fun getMonthTotalIncomeFromLastMonth(): Double{
+        return transactionCalculator.calculateMonthTotalIncomeFromLastMonth(getTransactionList())
+    }
+
+    fun getMonthTotalExpense(): Double{
+        return transactionCalculator.calculateMonthTotalExpense(getTransactionList())
+    }
+
+    fun getMonthTotalExpenseFromLastMonth(): Double{
+        return transactionCalculator.calculateMonthTotalExpenseFromLastMonth(getTransactionList())
+    }
+
+    fun getYearTotalIncome(): Double{
+        return transactionCalculator.calculateYearTotalIncome(getTransactionList())
+    }
+
+    fun getYearTotalIncomeFromLastYear(): Double{
+        return transactionCalculator.calculateYearTotalIncomeFromLastYear(getTransactionList())
+    }
+
+    fun getYearTotalExpense(): Double{
+        return transactionCalculator.calculateYearTotalExpense(getTransactionList())
+    }
+
+    fun getYearTotalExpenseFromLastYear(): Double{
+        return transactionCalculator.calculateYearTotalExpenseFromLastYear(getTransactionList())
+    }
+
+    fun getDayExpenseCategoryList(): List<Pair<Category, Double>>{
+        return getTransactionList()
+            .filter { it.transactionDateTime.toLocalDate() == LocalDate.now() && it.type == TransactionType.EXPENSE.value }
+            .groupBy { it.categoryId }
+            .map { (categoryId, list) ->
+                categories.find { category ->
+                    category.categoryId == categoryId
+                }!! to list.sumOf { it.amount }
+            }
+            .sortedByDescending { it.second }
+    }
+
+    fun getWeekExpenseCategoryList(): List<Pair<Category, Double>>{
+        val date = LocalDate.now()
+        val firstDayOfWeek = date
+            .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+
+        val lastDayOfWeek = date
+            .with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
+        return getTransactionList()
+            .filter { it.transactionDateTime.toLocalDate() in firstDayOfWeek..lastDayOfWeek && it.type == TransactionType.EXPENSE.value }
+            .groupBy { it.categoryId }
+            .map { (categoryId, list) ->
+                categories.find { category ->
+                    category.categoryId == categoryId
+                }!! to list.sumOf { it.amount }
+            }
+            .sortedByDescending { it.second }
+    }
+
+    fun getMonthExpenseCategoryList(): List<Pair<Category, Double>>{
+        val date = LocalDate.now()
+        val targetYearMonth = YearMonth.of(date.year, date.monthValue)
+        return getTransactionList()
+            .filter {
+                val transactionYearMonth = YearMonth.from(it.transactionDateTime)
+                targetYearMonth == transactionYearMonth && it.type == TransactionType.EXPENSE.value
+            }
+            .groupBy { it.categoryId }
+            .map { (categoryId, list) ->
+                categories.find { category ->
+                    category.categoryId == categoryId
+                }!! to list.sumOf { it.amount }
+            }
+            .sortedByDescending { it.second }
+    }
+
+    fun getYearExpenseCategoryList(): List<Pair<Category, Double>>{
+        return getTransactionList()
+            .filter { it.transactionDateTime.year == LocalDate.now().year && it.type == TransactionType.EXPENSE.value }
+            .groupBy { it.categoryId }
+            .map { (categoryId, list) ->
+                categories.find { category ->
+                    category.categoryId == categoryId
+                }!! to list.sumOf { it.amount }
+            }
+            .sortedByDescending { it.second }
     }
 
 //    fun loadTodayTransactions(){
