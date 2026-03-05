@@ -13,4 +13,8 @@ sealed class Screen(val route: String) {
     object StatsScreen : Screen("statsScreen")
     object BudgetScreen : Screen("budgetScreen")
     object ProfileScreen : Screen("profileScreen")
+    object CalendarScreen: Screen("calendarScreen")
+    object DateDetailsScreen: Screen("dateDetailsScreen/{dateString}"){
+        fun createRoute(dateString: String) = "dateDetailsScreen/$dateString"
+    }
 }

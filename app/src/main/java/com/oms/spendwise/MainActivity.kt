@@ -54,9 +54,11 @@ import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
+import com.oms.spendwise.features.transaction.calendar.CalendarViewModel
 import com.oms.spendwise.features.transaction.details.TransactionDetailsScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryViewModel
+import com.oms.spendwise.features.transaction.stats.StatsScreenViewModel
 import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.navigation.BottomNavigationItem
 import com.oms.spendwise.navigation.Screen
@@ -81,6 +83,9 @@ class MainActivity : ComponentActivity() {
     lateinit var addTransactionViewModel: AddTransactionViewModel
     lateinit var transactionHistoryViewModel: TransactionHistoryViewModel
     lateinit var screenNavigationViewModel: ScreenNavigationViewModel
+    lateinit var statsScreenViewModel: StatsScreenViewModel
+    lateinit var calendarViewModel: CalendarViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -92,6 +97,8 @@ class MainActivity : ComponentActivity() {
             addTransactionViewModel = hiltViewModel()
             transactionHistoryViewModel = hiltViewModel()
             screenNavigationViewModel = hiltViewModel()
+            statsScreenViewModel = hiltViewModel()
+            calendarViewModel = hiltViewModel()
             val context = applicationContext
 
 
@@ -106,6 +113,8 @@ class MainActivity : ComponentActivity() {
                     addTransactionViewModel = addTransactionViewModel,
                     transactionHistoryViewModel = transactionHistoryViewModel,
                     screenNavigationViewModel = screenNavigationViewModel,
+                    statsScreenViewModel = statsScreenViewModel,
+                    calendarViewModel = calendarViewModel,
                     context = context
                 )
             }

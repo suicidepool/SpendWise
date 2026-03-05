@@ -20,7 +20,8 @@ class ScreenNavigationViewModel @Inject constructor() : ViewModel() {
         Screen.StatsScreen.route,
         Screen.BudgetScreen.route,
         Screen.ProfileScreen.route,
-        Screen.TransactionHistoryScreen.route
+        Screen.TransactionHistoryScreen.route,
+        Screen.CalendarScreen.route
     )
 
     fun switchSelectedTab(bottomNavigationItem: BottomNavigationItem){

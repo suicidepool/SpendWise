@@ -27,15 +27,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePickerDefaults
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -52,7 +46,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -70,33 +63,25 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastCbrt
-import androidx.core.content.FileProvider
-import androidx.room.util.TableInfo
 import coil.compose.AsyncImage
-import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import com.oms.spendwise.R
 import com.oms.spendwise.features.profile.ProfileViewModel
-import com.oms.spendwise.ui.theme.BackgroundElevated
 import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.InputFieldContainer
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.PrimaryBlueLight
 import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
-import dagger.hilt.android.AndroidEntryPoint
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Currency
-import kotlin.contracts.contract
 
 @Composable
 fun CompleteProfileScreen(
@@ -358,7 +343,7 @@ private fun ProfileInfoInputSection(
                 modifier = Modifier.size(28.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Create,
+                    painter = painterResource(R.drawable.icon_create),
                     contentDescription = null,
                     modifier = Modifier
                         .size(16.dp)
@@ -494,8 +479,9 @@ private fun ProfileInfoInputSection(
                         onClick = toggleDatePicker
                     ) {
                         Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "date of birth"
+                            painter = painterResource(R.drawable.icon_calendar),
+                            contentDescription = "date of birth",
+                            modifier = Modifier.size(16.dp)
                         )
                     }
                 },

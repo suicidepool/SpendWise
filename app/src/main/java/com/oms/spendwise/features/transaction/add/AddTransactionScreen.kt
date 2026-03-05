@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -32,11 +33,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -139,6 +135,10 @@ fun AddTransactionScreen(
                 }
             }
         }
+    }
+    BackHandler() {
+        addTransactionViewModel.clearData()
+        onBack()
     }
     val datePickerState = rememberDatePickerState()
     val timePickerState = if(transaction != null){
@@ -321,9 +321,9 @@ private fun TopBar(
             onClick = onCancel
         ) {
             Icon(
-                imageVector = Icons.Default.Close,
+                painter = painterResource(R.drawable.icon_cross),
                 contentDescription = "Close",
-                modifier = Modifier.size(26.dp),
+                modifier = Modifier.size(18.dp),
                 tint = TextPrimary
             )
         }
@@ -580,10 +580,10 @@ private fun CalculatorKeypad(
                     )
                 } else{
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        painter = painterResource(R.drawable.icon_check),
                         contentDescription = "Confirm",
                         tint = Color.White,
-                        modifier = Modifier.size(32.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -771,7 +771,7 @@ private fun DateSelectSection (
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                imageVector = Icons.Default.DateRange,
+                painter = painterResource(R.drawable.icon_calendar),
                 contentDescription = "date pick",
                 tint = TextHint,
                 modifier = Modifier

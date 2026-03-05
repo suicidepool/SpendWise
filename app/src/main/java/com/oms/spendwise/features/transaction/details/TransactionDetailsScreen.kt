@@ -22,10 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -236,7 +232,7 @@ private fun BottomBar(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ){
                 Icon(
-                    imageVector = Icons.Default.Create,
+                    painter = painterResource(R.drawable.icon_create),
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
                     tint = PrimaryBlue
@@ -263,7 +259,7 @@ private fun BottomBar(
                 contentPadding = PaddingValues(vertical = 16.dp)
             ){
                 Icon(
-                    imageVector = Icons.Default.Delete,
+                    painter = painterResource(R.drawable.icon_trashbin),
                     contentDescription = null,
                     modifier = Modifier.size(22.dp)
                 )

@@ -21,8 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -255,7 +253,7 @@ fun FilteredTransactions(
 }
 
 @Composable
-private fun Overview(
+fun Overview(
     modifier: Modifier = Modifier,
     totalIncome: String,
     totalExpense: String
@@ -280,7 +278,7 @@ private fun Overview(
 }
 
 @Composable
-private fun OverviewItemCard(
+fun OverviewItemCard(
     modifier: Modifier = Modifier,
     amount: String,
     type: TransactionType
@@ -317,7 +315,7 @@ private fun OverviewItemCard(
 }
 
 @Composable
-private fun TransactionItem(
+fun TransactionItem(
     modifier: Modifier = Modifier,
     transaction: Transaction,
     category: Category,
@@ -486,7 +484,7 @@ private fun TopBar(
                         }
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Close,
+                            painter = painterResource(R.drawable.icon_cross),
                             contentDescription = "note",
                             tint = TextHint,
                             modifier = Modifier.size(16.dp)

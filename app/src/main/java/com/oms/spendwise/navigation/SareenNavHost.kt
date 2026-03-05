@@ -1,6 +1,7 @@
 package com.oms.spendwise.navigation
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -20,11 +21,16 @@ import com.oms.spendwise.features.transaction.stats.StatsScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionScreen
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
+import com.oms.spendwise.features.transaction.calendar.CalendarScreen
+import com.oms.spendwise.features.transaction.calendar.CalendarViewModel
+import com.oms.spendwise.features.transaction.calendar.DateDetailsScreen
 import com.oms.spendwise.features.transaction.details.TransactionDetailsScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryViewModel
 import com.oms.spendwise.features.transaction.stats.StatsScreenViewModel
 import com.oms.spendwise.ui.theme.Dimens
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.Currency
 
 @Composable
@@ -35,6 +41,7 @@ fun ScreenNavHost(
     addTransactionViewModel: AddTransactionViewModel,
     transactionHistoryViewModel: TransactionHistoryViewModel,
     statsScreenViewModel: StatsScreenViewModel,
+    calendarViewModel: CalendarViewModel,
     context: Context
 ) {
 
@@ -161,7 +168,26 @@ fun ScreenNavHost(
                     currency = Currency.getInstance(profileViewModel.user!!.currency),
                     statsScreenViewModel = statsScreenViewModel,
                     transactionViewModel = transactionViewModel,
-                    onCalendarClick = {}
+                    onCalendarClick = {
+                        navController.navigate(Screen.CalendarScreen.route)
+                    }
+                )
+        }
+
+        composable(
+            route = Screen.CalendarScreen.route
+        ){
+            if (profileViewModel.user != null)
+                CalendarScreen(
+                    calendarViewModel = calendarViewModel,
+                    transactionVM = transactionViewModel,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    onDateClick = {date: LocalDate ->
+                        navController.navigate(Screen.DateDetailsScreen.createRoute(date.toString()))
+                    }
                 )
         }
 
@@ -175,6 +201,37 @@ fun ScreenNavHost(
             route = Screen.ProfileScreen.route
         ){
             ProfileScreen()
+        }
+
+        composable(
+            route = Screen.DateDetailsScreen.route,
+            arguments = listOf(
+                navArgument(
+                    name = "dateString"
+                ){
+                    type = NavType.StringType
+                }
+            )
+        ){ backStackEntry ->
+            val dateString = backStackEntry.arguments?.getString("dateString")
+            val date = LocalDate.parse(dateString)
+            if (profileViewModel.user != null)
+                DateDetailsScreen(
+                    date = date,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    transactionViewModel = transactionViewModel,
+                    context = context,
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    onItemClick = { id ->
+                        navController.navigate(Screen.TransactionDetailsScreen.createRoute(id))
+                    },
+                    onAddTransactionClick = { date ->
+                        addTransactionViewModel.onTransactionDateTimeChange(LocalDateTime.now().with(date))
+                        navController.navigate(Screen.AddTransactionScreen.createRoute(-1L))
+                    }
+                )
         }
     }
 }

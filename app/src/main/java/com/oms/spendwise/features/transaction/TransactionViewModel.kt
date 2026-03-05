@@ -17,12 +17,14 @@ import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.text.DecimalFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.YearMonth
 import java.time.temporal.TemporalAdjusters
 import javax.inject.Inject
+import kotlin.math.abs
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
@@ -253,12 +255,34 @@ class TransactionViewModel @Inject constructor(
         return transactionCalculator.calculateMonthTotalIncome(getTransactionList())
     }
 
+    fun getMonthTotalIncome(
+        month: Int,
+        year: Int
+    ): Double {
+        return transactionCalculator.calculateMonthTotalIncome(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
+    }
+
     fun getMonthTotalIncomeFromLastMonth(): Double{
         return transactionCalculator.calculateMonthTotalIncomeFromLastMonth(getTransactionList())
     }
 
     fun getMonthTotalExpense(): Double{
         return transactionCalculator.calculateMonthTotalExpense(getTransactionList())
+    }
+
+    fun getMonthTotalExpense(
+        month: Int,
+        year: Int
+    ): Double {
+        return transactionCalculator.calculateMonthTotalExpense(
+            transactions = getTransactionList(),
+            month = month,
+            year = year
+        )
     }
 
     fun getMonthTotalExpenseFromLastMonth(): Double{
@@ -338,6 +362,18 @@ class TransactionViewModel @Inject constructor(
                 }!! to list.sumOf { it.amount }
             }
             .sortedByDescending { it.second }
+    }
+
+    fun shortFormat(amount: Double): String {
+        val df = DecimalFormat("#.##")
+        val absValue = abs(amount)
+
+        return when {
+            absValue >= 1_000_000_000 -> "${df.format(amount / 1_000_000_000)}B"
+            absValue >= 1_000_000 -> "${df.format(amount / 1_000_000)}M"
+            absValue >= 1_000 -> "${df.format(amount / 1_000)}K"
+            else -> df.format(amount)
+        }
     }
 
 //    fun loadTodayTransactions(){
