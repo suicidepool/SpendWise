@@ -22,6 +22,7 @@ import java.io.File
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Currency
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +38,12 @@ class ProfileViewModel @Inject constructor(
     init {
         loadUser()
     }
+
+    val currencyList = listOf(
+        Currency.getInstance("INR"),
+        Currency.getInstance("USD"),
+        Currency.getInstance("EUR")
+    )
 
 
     fun loadUser(){
@@ -130,6 +137,7 @@ class ProfileViewModel @Inject constructor(
         val currentUser = user ?: return
 
         viewModelScope.launch {
+            Log.d("USER",currentUser.toString())
             userRepository.deleteUser(currentUser)
             user = null
         }

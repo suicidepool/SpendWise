@@ -94,11 +94,6 @@ fun CompleteProfileScreen(
     var name by remember { mutableStateOf("") }
     var dob by remember { mutableStateOf<LocalDate?>(null) }
     var currency by remember { mutableStateOf(Currency.getInstance("INR")) }
-    val currencyList = listOf(
-        Currency.getInstance("INR"),
-        Currency.getInstance("USD"),
-        Currency.getInstance("EUR")
-    )
     val formatDate = { dob:LocalDate? ->
         val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy")
         dob?.format(formatter) ?: ""
@@ -143,7 +138,7 @@ fun CompleteProfileScreen(
                 name = name,
                 dob = formatDate(dob),
                 currency = currency,
-                currencyList = currencyList,
+                currencyList = profileViewModel.currencyList,
                 onNameChange = {name = it},
                 onDobChange = {dob = it},
                 onCurrencyChange = {currency = it},
@@ -340,13 +335,13 @@ private fun ProfileInfoInputSection(
                     contentColor = BackgroundPrimary,
                     containerColor = PrimaryBlue
                 ),
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(24.dp)
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_create),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(12.dp)
                 )
             }
         }

@@ -1,11 +1,12 @@
 package com.oms.spendwise.navigation
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -45,9 +46,13 @@ fun ScreenNavHost(
     context: Context
 ) {
 
+    val startDestinationScreenRoute = remember { mutableStateOf(Screen.DashboardScreen.route) }
+    if(!profileViewModel.isLoading && profileViewModel.user == null)
+        startDestinationScreenRoute.value = Screen.CompleteProfileScreen.route
+
     NavHost(
         navController = navController,
-        startDestination = Screen.DashboardScreen.route,
+        startDestination = startDestinationScreenRoute.value,
         enterTransition = {
             slideIntoContainer(
                 AnimatedContentTransitionScope.SlideDirection.Left,
@@ -200,7 +205,15 @@ fun ScreenNavHost(
         composable(
             route = Screen.ProfileScreen.route
         ){
-            ProfileScreen()
+            ProfileScreen(
+                profileVM = profileViewModel,
+                onEditProfileClick = {},
+                resetAllData = {
+                    transactionViewModel.deleteAllTransactions()
+                    profileViewModel.resetAllData()
+                    navController.navigate(Screen.CompleteProfileScreen.route)
+                }
+            )
         }
 
         composable(

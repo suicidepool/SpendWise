@@ -115,6 +115,13 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+    fun deleteAllTransactions(){
+        viewModelScope.launch {
+            transactionRepository.deleteAllTransactions()
+            loadTransactions()
+        }
+    }
+
     fun loadTransactions(){
         isLoading = true
         viewModelScope.launch {
