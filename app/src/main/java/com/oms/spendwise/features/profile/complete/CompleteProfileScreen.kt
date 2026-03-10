@@ -180,7 +180,7 @@ private fun BottomBar(
     Button(
         onClick = onContinue,
         shape = RoundedCornerShape(Dimens.ButtonCornerRadius),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
             .padding(vertical = 10.dp)
@@ -217,7 +217,7 @@ private fun TitlePart(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileInfoInputSection(
+fun ProfileInfoInputSection(
     modifier: Modifier = Modifier,
     profileImage: Uri?,
     name: String,
@@ -227,7 +227,7 @@ private fun ProfileInfoInputSection(
     onNameChange: (String) -> Unit,
     onDobChange: (LocalDate) -> Unit,
     onCurrencyChange: (Currency) -> Unit,
-    onProfileImageChange: (Uri) -> Unit,
+    onProfileImageChange: (Uri?) -> Unit,
     profileViewModel: ProfileViewModel
 ){
 
@@ -367,6 +367,29 @@ private fun ProfileInfoInputSection(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(Modifier.height(12.dp))
+                    profileImage?.let{ image ->
+                        Row(
+                            modifier = Modifier.clickable(
+                                onClick = {
+                                    onProfileImageChange(null)
+                                    showModalBottomSheet = false
+                                }
+                            ),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.icon_cross),
+                                contentDescription = "Choose from Gallery",
+                                tint = PrimaryBlue,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "Remove Profile Picture"
+                            )
+                        }
+                        Spacer(Modifier.height(22.dp))
+                    }
                     Row(
                         modifier = Modifier.clickable(
                             onClick = {

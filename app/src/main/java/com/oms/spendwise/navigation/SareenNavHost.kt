@@ -1,6 +1,7 @@
 package com.oms.spendwise.navigation
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,7 @@ import com.oms.spendwise.features.budget.BudgetScreen
 import com.oms.spendwise.features.transaction.dashboard.DashboardScreen
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
+import com.oms.spendwise.features.profile.edit.EditProfileScreen
 import com.oms.spendwise.features.profile.profile.ProfileScreen
 import com.oms.spendwise.features.transaction.stats.StatsScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
@@ -207,7 +209,10 @@ fun ScreenNavHost(
         ){
             ProfileScreen(
                 profileVM = profileViewModel,
-                onEditProfileClick = {},
+                onEditProfileClick = {
+                    if(profileViewModel.user != null)
+                        navController.navigate(Screen.EditProfileScreen.route)
+                },
                 resetAllData = {
                     transactionViewModel.deleteAllTransactions()
                     profileViewModel.resetAllData()
@@ -245,6 +250,21 @@ fun ScreenNavHost(
                         navController.navigate(Screen.AddTransactionScreen.createRoute(-1L))
                     }
                 )
+        }
+
+        composable(
+            route = Screen.EditProfileScreen.route
+        ){
+            EditProfileScreen(
+                onSave = {
+                    navController.popBackStack()
+                },
+                profileViewModel = profileViewModel,
+                onBack = {
+                    navController.popBackStack()
+                },
+                context = context,
+            )
         }
     }
 }

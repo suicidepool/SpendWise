@@ -60,10 +60,32 @@ class UserRepository @Inject constructor(
         throw Exception("user already registered")
     }
 
-    suspend fun updateUser(user: User){
+    suspend fun updateUser(
+        name: String,
+        profilePic: Uri?,
+        currency: String,
+        weekStart: DayOfWeek,
+        dateOfBirth: LocalDate
+    ){
         val currentUser = userDao.getUser()
-        if (currentUser != null){
-            userDao.updateUser(user)
+
+        if(currentUser != null){
+            var compressedProfilePic:Uri? = null
+            profilePic?.let {
+                val profilePicBitmap = uriToBitmap(profilePic)
+                compressedProfilePic = compressAndSaveImage(profilePicBitmap)
+            }
+            userDao.updateUser(
+                User(
+                    userId = currentUser.userId,
+                    name = name,
+                    profilePic = compressedProfilePic?.toString() ?: "",
+                    currency = currency,
+                    weekStart = weekStart,
+                    dateOfBirth = dateOfBirth,
+                    createdAt = LocalDateTime.now()
+                )
+            )
             return
         }
 

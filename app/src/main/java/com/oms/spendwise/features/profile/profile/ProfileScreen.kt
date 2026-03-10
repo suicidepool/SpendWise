@@ -1,6 +1,7 @@
 package com.oms.spendwise.features.profile.profile
 
 import android.net.Uri
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -159,7 +160,7 @@ fun UserDetailsSection(
     ) {
         Spacer(Modifier.height(24.dp))
         ProfileImage(
-            profileImage = user.profilePic.toUri()
+            profileImage = if(user.profilePic.isNotEmpty()) user.profilePic.toUri() else null
         )
         Spacer(Modifier.height(16.dp))
         Text(
@@ -439,6 +440,9 @@ private fun BirthDate(
 private fun ProfileImage(
     profileImage: Uri?
 ) {
+    profileImage?.let {
+        Log.d("PROFILE_IMAGE",it.toString())
+    }
     Card(
         modifier = Modifier
             .size(120.dp),
@@ -446,6 +450,7 @@ private fun ProfileImage(
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         if (profileImage != null) {
+            Log.d("PROFILE_IMAGE", profileImage.toString())
             AsyncImage(
                 model = profileImage,
                 contentDescription = "profile picture",
@@ -455,6 +460,7 @@ private fun ProfileImage(
                 contentScale = ContentScale.Crop
             )
         } else {
+            Log.d("PROFILE_IMAGE", "default")
             Image(
                 painter = painterResource(R.drawable.image_empty_profile),
                 contentDescription = "profile picture",

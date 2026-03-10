@@ -96,40 +96,22 @@ class ProfileViewModel @Inject constructor(
         )
     }
 
-    fun updateUserName(name: String){
-        val currentUser = user ?: return
-
+    fun updateUser(
+        name: String,
+        profilePic: Uri?,
+        currency: String,
+        weekStart: DayOfWeek,
+        dateOfBirth: LocalDate
+    ){
         viewModelScope.launch {
-            userRepository.updateUser(currentUser.copy(name = name))
-            user = currentUser.copy(name = name)
-        }
-    }
-
-    fun updateUserPic(profilePic: String){
-        val currentUser = user ?: return
-
-        viewModelScope.launch {
-            userRepository.updateUser(currentUser.copy(profilePic = profilePic))
-            user = currentUser.copy(profilePic = profilePic)
-        }
-    }
-
-
-    fun updateCurrency(currency: String){
-        val currentUser = user ?: return
-
-        viewModelScope.launch {
-            userRepository.updateUser(currentUser.copy(currency = currency))
-            user = currentUser.copy(currency = currency)
-        }
-    }
-
-    fun updateWeekStartDay(day: DayOfWeek){
-        val currentUser = user ?: return
-
-        viewModelScope.launch {
-            userRepository.updateUser(currentUser.copy(weekStart = day))
-            user = currentUser.copy(weekStart = day)
+            userRepository.updateUser(
+                name = name,
+                profilePic = profilePic,
+                currency = currency,
+                weekStart = weekStart,
+                dateOfBirth = dateOfBirth
+            )
+            loadUser()
         }
     }
 
