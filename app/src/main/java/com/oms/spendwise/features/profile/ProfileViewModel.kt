@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.TimePicker
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,7 +30,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     val userRepository: UserRepository,
     @param:ApplicationContext val context: Context
-): ViewModel(){
+): ViewModel()
+{
     var user by mutableStateOf<User?>(null)
         private set
 
@@ -74,13 +76,13 @@ class ProfileViewModel @Inject constructor(
                 weekStart = weekStart,
                 dateOfBirth = dateOfBirth
             )
-            isLoading = false
             loadUser()
+            isLoading = false
         }
     }
 
     fun createImageFile(): File{
-        val fileName = "profile_image"
+        val fileName = LocalDateTime.now().toString()
         return File.createTempFile(
             fileName,
             ".jpg",
@@ -104,6 +106,7 @@ class ProfileViewModel @Inject constructor(
         dateOfBirth: LocalDate
     ){
         viewModelScope.launch {
+            isLoading = true
             userRepository.updateUser(
                 name = name,
                 profilePic = profilePic,
@@ -112,6 +115,7 @@ class ProfileViewModel @Inject constructor(
                 dateOfBirth = dateOfBirth
             )
             loadUser()
+            isLoading = false
         }
     }
 

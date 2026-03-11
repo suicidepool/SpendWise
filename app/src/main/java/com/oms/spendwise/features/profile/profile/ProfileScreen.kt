@@ -440,9 +440,6 @@ private fun BirthDate(
 private fun ProfileImage(
     profileImage: Uri?
 ) {
-    profileImage?.let {
-        Log.d("PROFILE_IMAGE",it.toString())
-    }
     Card(
         modifier = Modifier
             .size(120.dp),
@@ -450,7 +447,6 @@ private fun ProfileImage(
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
         if (profileImage != null) {
-            Log.d("PROFILE_IMAGE", profileImage.toString())
             AsyncImage(
                 model = profileImage,
                 contentDescription = "profile picture",
@@ -460,7 +456,6 @@ private fun ProfileImage(
                 contentScale = ContentScale.Crop
             )
         } else {
-            Log.d("PROFILE_IMAGE", "default")
             Image(
                 painter = painterResource(R.drawable.image_empty_profile),
                 contentDescription = "profile picture",

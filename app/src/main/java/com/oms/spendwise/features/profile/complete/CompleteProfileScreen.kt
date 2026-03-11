@@ -112,7 +112,7 @@ fun CompleteProfileScreen(
         },
         bottomBar = {
             BottomBar{
-                if(name.isNotEmpty() && dob != null && currency != null)
+                if(name.isNotEmpty() && dob != null && currency != null){
                     profileViewModel.addUser(
                         name = name,
                         profilePic = profileImage,
@@ -120,9 +120,10 @@ fun CompleteProfileScreen(
                         weekStart = DayOfWeek.SUNDAY,
                         dateOfBirth = dob!!
                     )
+                    onContinue()
+                }
                 else
                     Toast.makeText(context,"Please Complete all Fields 🥺", Toast.LENGTH_SHORT).show()
-                onContinue()
             }
         }
     ) {innerPadding ->
@@ -239,11 +240,12 @@ fun ProfileInfoInputSection(
         showDatePicker = !showDatePicker
     }
     val datePickerState = rememberDatePickerState()
-    val uri = profileViewModel.createImageUri()
+    var uri by remember { mutableStateOf<Uri?>(null) }
     val cropLauncher = rememberLauncherForActivityResult(
         contract = CropImageContract()
     ) { result ->
         if(result.isSuccessful){
+            Log.d("IMAGE","hello")
             result.uriContent?.let{onProfileImageChange(it)}
         }
     }
@@ -271,19 +273,21 @@ fun ProfileInfoInputSection(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if(success){
-            cropLauncher.launch(
-                CropImageContractOptions(
-                    uri = uri,
-                    cropImageOptions = CropImageOptions().apply {
-                        aspectRatioX = 1
-                        aspectRatioY = 1
-                        fixAspectRatio = true
-                        cropShape = CropImageView.CropShape.OVAL
-                        guidelines = CropImageView.Guidelines.ON
-                        cropMenuCropButtonTitle = "Done"
-                    }
+            uri?.let{
+                cropLauncher.launch(
+                    CropImageContractOptions(
+                        uri = it,
+                        cropImageOptions = CropImageOptions().apply {
+                            aspectRatioX = 1
+                            aspectRatioY = 1
+                            fixAspectRatio = true
+                            cropShape = CropImageView.CropShape.OVAL
+                            guidelines = CropImageView.Guidelines.ON
+                            cropMenuCropButtonTitle = "Done"
+                        }
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -291,7 +295,7 @@ fun ProfileInfoInputSection(
         contract = ActivityResultContracts.RequestPermission()
     ) { granted ->
         if(granted){
-            cameraLauncher.launch(uri)
+            uri?.let{cameraLauncher.launch(it)}
         }
     }
 
@@ -367,7 +371,7 @@ fun ProfileInfoInputSection(
                         style = MaterialTheme.typography.titleMedium,
                     )
                     Spacer(Modifier.height(12.dp))
-                    profileImage?.let{ image ->
+                    profileImage?.let{
                         Row(
                             modifier = Modifier.clickable(
                                 onClick = {
@@ -393,8 +397,8 @@ fun ProfileInfoInputSection(
                     Row(
                         modifier = Modifier.clickable(
                             onClick = {
+                                uri = profileViewModel.createImageUri()
                                 permissionLauncher.launch(Manifest.permission.CAMERA)
-//                                cameraLauncher.launch(uri)
                                 showModalBottomSheet = false
                             }
                         ),
