@@ -10,20 +10,23 @@ import androidx.lifecycle.viewModelScope
 import com.oms.spendwise.data.repository.BudgetRepository
 import com.oms.spendwise.data.repository.CategoryRepository
 import com.oms.spendwise.data.repository.TransactionRepository
+import com.oms.spendwise.domain.BudgetCalculator
 import com.oms.spendwise.model.entity.Budget
 import com.oms.spendwise.model.entity.BudgetCategory
 import com.oms.spendwise.model.entity.Category
+import com.oms.spendwise.model.entity.Transaction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import javax.inject.Inject
+import kotlin.math.round
 
 @HiltViewModel
 class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
-    private val transactionRepository: TransactionRepository
+    private val budgetCalculator: BudgetCalculator
 ): ViewModel() {
 
     var budget by mutableStateOf<Budget?>(null)
@@ -149,5 +152,43 @@ class BudgetViewModel @Inject constructor(
         end: LocalDate
     ): Int {
         return ChronoUnit.DAYS.between(start, end).toInt()
+    }
+
+    fun getAmountSpent(
+        transactions: List<Transaction>
+    ) : Double{
+        var amountSpent = 0.0
+        budget?.let {
+            amountSpent = budgetCalculator.calculateAmountSpent(
+                transactions = transactions,
+                startDate = it.startDate,
+                endDate = it.endDate
+            )
+        }
+        return amountSpent
+    }
+
+    fun getAmountSpent(
+        categoryId: Long,
+        transactions: List<Transaction>
+    ) : Double{
+        var amountSpent = 0.0
+        budget?.let {
+            amountSpent = budgetCalculator.calculateAmountSpent(
+                categoryId = categoryId,
+                transactions = transactions,
+                startDate = it.startDate,
+                endDate = it.endDate
+            )
+        }
+        return amountSpent
+    }
+
+    fun getPercentage(
+        spent: Double,
+        total: Double,
+    ):Double{
+        val percentage = (spent / total) * 100
+        return round(percentage * 100) / 100
     }
 }

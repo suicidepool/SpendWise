@@ -204,7 +204,17 @@ fun ScreenNavHost(
         composable(
             route = Screen.BudgetScreen.route
         ){
-            BudgetScreen()
+            if (profileViewModel.user != null)
+                BudgetScreen(
+                    budgetVM = budgetViewModel,
+                    openSetBudgetScreen = {
+                        navController.navigate(Screen.SetBudgetScreen.route)
+                    },
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    transactions = transactionViewModel.getTransactionList(),
+                    context = context,
+                    categories = transactionViewModel.categories.filter { it.type == TransactionType.EXPENSE.value },
+                )
         }
 
         composable(
