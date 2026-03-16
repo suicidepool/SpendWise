@@ -194,6 +194,7 @@ fun SetBudgetScreen(
                                 amount = amount.toDouble(),
                                 categories = selectedCategoryList
                             )
+                        onBack()
                     }
                 }
             )
