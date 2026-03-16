@@ -49,6 +49,7 @@ import coil.size.Dimension
 import com.oms.spendwise.data.repository.BudgetRepository
 import com.oms.spendwise.features.app.App
 import com.oms.spendwise.features.app.ScreenNavigationViewModel
+import com.oms.spendwise.features.budget.BudgetViewModel
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
 import com.oms.spendwise.features.transaction.TransactionViewModel
@@ -85,6 +86,7 @@ class MainActivity : ComponentActivity() {
     lateinit var screenNavigationViewModel: ScreenNavigationViewModel
     lateinit var statsScreenViewModel: StatsScreenViewModel
     lateinit var calendarViewModel: CalendarViewModel
+    lateinit var budgetViewModel: BudgetViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +101,7 @@ class MainActivity : ComponentActivity() {
             screenNavigationViewModel = hiltViewModel()
             statsScreenViewModel = hiltViewModel()
             calendarViewModel = hiltViewModel()
+            budgetViewModel = hiltViewModel()
             val context = applicationContext
 
 
@@ -115,6 +118,7 @@ class MainActivity : ComponentActivity() {
                     screenNavigationViewModel = screenNavigationViewModel,
                     statsScreenViewModel = statsScreenViewModel,
                     calendarViewModel = calendarViewModel,
+                    budgetViewModel = budgetViewModel,
                     context = context
                 )
             }

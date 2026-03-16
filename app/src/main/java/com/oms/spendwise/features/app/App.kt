@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.oms.spendwise.features.budget.BudgetViewModel
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.features.transaction.add.AddTransactionViewModel
@@ -64,6 +65,7 @@ fun App(
     screenNavigationViewModel: ScreenNavigationViewModel,
     statsScreenViewModel: StatsScreenViewModel,
     calendarViewModel: CalendarViewModel,
+    budgetViewModel: BudgetViewModel,
     context: Context,
 ) {
     val scope = rememberCoroutineScope()
@@ -95,6 +97,7 @@ fun App(
             transactionHistoryViewModel = transactionHistoryViewModel,
             statsScreenViewModel = statsScreenViewModel,
             calendarViewModel = calendarViewModel,
+            budgetViewModel = budgetViewModel,
             context = context
         )
 

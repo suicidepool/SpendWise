@@ -1,7 +1,6 @@
 package com.oms.spendwise.navigation
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
@@ -15,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.oms.spendwise.features.budget.BudgetScreen
+import com.oms.spendwise.features.budget.BudgetViewModel
+import com.oms.spendwise.features.budget.add.SetBudgetScreen
 import com.oms.spendwise.features.transaction.dashboard.DashboardScreen
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.profile.complete.CompleteProfileScreen
@@ -31,6 +32,7 @@ import com.oms.spendwise.features.transaction.details.TransactionDetailsScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryScreen
 import com.oms.spendwise.features.transaction.history.TransactionHistoryViewModel
 import com.oms.spendwise.features.transaction.stats.StatsScreenViewModel
+import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.ui.theme.Dimens
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -45,6 +47,7 @@ fun ScreenNavHost(
     transactionHistoryViewModel: TransactionHistoryViewModel,
     statsScreenViewModel: StatsScreenViewModel,
     calendarViewModel: CalendarViewModel,
+    budgetViewModel: BudgetViewModel,
     context: Context
 ) {
 
@@ -265,6 +268,22 @@ fun ScreenNavHost(
                 },
                 context = context,
             )
+        }
+
+        composable(
+            route = Screen.SetBudgetScreen.route
+        ){
+            if(profileViewModel.user != null)
+                SetBudgetScreen(
+                    budgetVM = budgetViewModel,
+                    userId = profileViewModel.user!!.userId,
+                    currency = Currency.getInstance(profileViewModel.user!!.currency),
+                    categories = transactionViewModel.categories.filter { it.type == TransactionType.EXPENSE.value },
+                    context = context,
+                    onBack = {
+                        navController.popBackStack()
+                    }
+                )
         }
     }
 }

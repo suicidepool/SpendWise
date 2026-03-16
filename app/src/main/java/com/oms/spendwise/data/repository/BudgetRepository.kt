@@ -1,5 +1,6 @@
 package com.oms.spendwise.data.repository
 
+import android.util.Log
 import com.oms.spendwise.data.local.dao.BudgetCategoryDao
 import com.oms.spendwise.data.local.dao.BudgetDao
 import com.oms.spendwise.model.entity.Budget
@@ -30,9 +31,30 @@ class BudgetRepository @Inject constructor(
         )
     }
 
-    suspend fun updateBudget(budget: Budget){
-        budgetDao.updateBudget(budget)
+    suspend fun updateBudget(
+        budgetId: Long,
+        userId: Long,
+        startDate: LocalDate,
+        endDate: LocalDate,
+        amount: Double
+    ){
+        budgetDao.updateBudget(
+            Budget(
+                budgetId = budgetId,
+                userId = userId,
+                startDate = startDate,
+                endDate = endDate,
+                amount = amount
+            )
+        )
     }
+
+    suspend fun deleteBudgetCategories(
+        budgetId: Long
+    ){
+        budgetCategoryDao.deleteBudgetCategories(budgetId)
+    }
+
 
     suspend fun deleteBudget(budget: Budget){
         budgetDao.deleteBudget(budget)
@@ -48,7 +70,7 @@ class BudgetRepository @Inject constructor(
         if(allBudgets.isNotEmpty()){
             val currentDate = LocalDate.now()
             val recentBudget = allBudgets[0]
-            val isCurrentBudget = currentDate.isAfter(recentBudget.startDate) && currentDate.isBefore(recentBudget.endDate)
+            val isCurrentBudget = (currentDate == recentBudget.startDate) || (currentDate == recentBudget.endDate) || (currentDate.isAfter(recentBudget.startDate) && currentDate.isBefore(recentBudget.endDate))
             if(isCurrentBudget) return recentBudget
         }
         return null
@@ -56,6 +78,20 @@ class BudgetRepository @Inject constructor(
 
     suspend fun getBudgetCategories(budgetId: Long): List<BudgetCategory>{
         return budgetCategoryDao.getBudgetCategories(budgetId)
+    }
+
+    suspend fun addBudgetCategory(
+        budgetId: Long,
+        categoryId: Long,
+        amountLimit: Double
+    ){
+        budgetCategoryDao.insertBudgetCategory(
+            BudgetCategory(
+                budgetId = budgetId,
+                categoryId = categoryId,
+                amountLimit = amountLimit
+            )
+        )
     }
 
 }

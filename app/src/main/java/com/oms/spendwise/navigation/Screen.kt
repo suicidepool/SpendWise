@@ -18,4 +18,5 @@ sealed class Screen(val route: String) {
         fun createRoute(dateString: String) = "dateDetailsScreen/$dateString"
     }
     object EditProfileScreen: Screen("editProfileScreen")
+    object SetBudgetScreen: Screen("setBudgetScreen")
 }
