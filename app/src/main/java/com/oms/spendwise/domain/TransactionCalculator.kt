@@ -1,6 +1,5 @@
 package com.oms.spendwise.domain
 
-import android.util.Log
 import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
 import java.time.LocalDate

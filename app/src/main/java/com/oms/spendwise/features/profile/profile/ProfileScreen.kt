@@ -1,7 +1,6 @@
 package com.oms.spendwise.features.profile.profile
 
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

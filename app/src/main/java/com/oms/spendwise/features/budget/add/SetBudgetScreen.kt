@@ -2,12 +2,10 @@ package com.oms.spendwise.features.budget.add
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,13 +19,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -58,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -67,23 +60,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import com.oms.spendwise.R
 import com.oms.spendwise.features.budget.BudgetViewModel
 import com.oms.spendwise.model.entity.Category
-import com.oms.spendwise.model.entity.Transaction
-import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.ui.theme.ChartGreen
 import com.oms.spendwise.ui.theme.Dimens
-import com.oms.spendwise.ui.theme.ExpenseRed
-import com.oms.spendwise.ui.theme.IncomeGreen
 import com.oms.spendwise.ui.theme.InputFieldContainer
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.RedButton
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
-import com.oms.spendwise.utils.formatTime
-import kotlinx.coroutines.coroutineScope
+import com.oms.spendwise.utils.AmountFormatter
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.util.Currency
@@ -101,7 +88,7 @@ fun SetBudgetScreen(
 
     val scope = rememberCoroutineScope()
     var startDate by remember { mutableStateOf(LocalDate.now()) }
-    var endDate by remember { mutableStateOf(startDate.plusDays(30)) }
+    var endDate by remember { mutableStateOf(startDate.plusDays(29)) }
     var budgetDuration by remember { mutableStateOf(budgetVM.getDays(startDate, endDate)) }
     var amount by remember { mutableStateOf("") }
     val selectedCategoryList = remember { mutableStateListOf<Pair<Category, String>>() }
@@ -114,10 +101,10 @@ fun SetBudgetScreen(
 
     LaunchedEffect(budgetVM.budget){
         budgetVM.budget?.let { budget ->
-            Log.d("BUDGET",budget.budgetId.toString())
             startDate = budget.startDate
             endDate = budget.endDate
-            amount = budget.amount.toString()
+            budgetDuration = budgetVM.getDays(budget.startDate, budget.endDate)
+            amount = AmountFormatter.formatDecimal(budget.amount)
         }
     }
 
@@ -126,7 +113,7 @@ fun SetBudgetScreen(
         selectedCategoryList.clear()
         budgetVM.budgetCategories.forEach { item ->
             val category = categories.find { it.categoryId == item.categoryId }
-            selectedCategoryList.add(Pair(category!!, item.amountLimit.toString()))
+            selectedCategoryList.add(Pair(category!!, AmountFormatter.formatDecimal(item.amountLimit)))
         }
     }
 
@@ -221,7 +208,8 @@ fun SetBudgetScreen(
             AmountSection(
                 currency = currency,
                 amount = amount,
-                onAmountChange = { it ->
+                onAmountChange = {
+                    if(it.length > 10) return@AmountSection
                     if(it == "" || it[it.length-1].isDigit() ||  it[it.length-1] == '.' )
                         if(it.contains(".")){
                             val decimalIndex = it.indexOf(".")
@@ -355,7 +343,7 @@ private fun AllocationDetailsSection(
                     color = TextSecondary.copy(alpha = 0.6f)
                 )
                 Text(
-                    text = "${currency.symbol}${remainingToAllocate}",
+                    text = "${currency.symbol}${AmountFormatter.formatAmount(remainingToAllocate)}",
                     style = MaterialTheme.typography.labelMedium,
                     color = if(remainingToAllocate > 0) PrimaryBlue else if(remainingToAllocate < 0) RedButton else ChartGreen,
                     fontWeight = FontWeight.Bold
@@ -366,7 +354,7 @@ private fun AllocationDetailsSection(
                 BudgetCategoryItem(
                     category = budgetItem.first,
                     amount = budgetItem.second,
-                    onAmountChange = { it ->
+                    onAmountChange = {
                         if(it == "" || it[it.length-1].isDigit() ||  it[it.length-1] == '.' )
                             if(it.contains(".")){
                                 val decimalIndex = it.indexOf(".")
@@ -680,21 +668,21 @@ private fun BudgetDurationSelectSection(
                 text = "Weekly",
                 cornerSize = 8.dp,
                 isSelected = budgetDuration == 7,
-                onClick = {onBudgetDurationChange(7)}
+                onClick = {onBudgetDurationChange(6)}
             )
             BudgetDurationButton(
                 modifier = Modifier.weight(.5f),
                 text = "Monthly",
                 cornerSize = 8.dp,
                 isSelected = budgetDuration == 30,
-                onClick = {onBudgetDurationChange(30)}
+                onClick = {onBudgetDurationChange(29)}
             )
             BudgetDurationButton(
                 modifier = Modifier.weight(.5f),
                 text = "Yearly",
                 cornerSize = 8.dp,
                 isSelected = budgetDuration == 365,
-                onClick = {onBudgetDurationChange(365)}
+                onClick = {onBudgetDurationChange(364)}
             )
         }
     }

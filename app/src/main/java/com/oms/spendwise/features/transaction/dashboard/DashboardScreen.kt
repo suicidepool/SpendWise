@@ -3,9 +3,11 @@ package com.oms.spendwise.features.transaction.dashboard
 
 import android.content.Context
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,10 +31,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,14 +55,14 @@ import com.oms.spendwise.R
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
-import com.oms.spendwise.navigation.BottomNavigationItem
-import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.ExpenseRed
 import com.oms.spendwise.ui.theme.IncomeGreen
 import com.oms.spendwise.ui.theme.PrimaryBlueLight
+import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatTime
+import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
-import kotlin.math.exp
+import kotlin.math.round
 
 @Composable
 fun DashboardScreen(
@@ -102,7 +108,7 @@ fun DashboardScreen(
         TodayTransactionSection(
             modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
             transactions = transactionViewModel.transactions[LocalDate.now()]
-                ?: emptyList<Transaction>(),
+                ?: emptyList(),
             onTransactionItemClick = onTransactionItemClick,
             onSeeAllClick = onSeeAllClick,
             context = context,
@@ -153,6 +159,21 @@ fun TodayTransactionSection(
         }
 
         Spacer(Modifier.height(12.dp))
+
+        if(transactions.isEmpty()){
+            Box(
+                modifier = Modifier.fillMaxWidth()
+                    .height(200.dp),
+                contentAlignment = Alignment.Center
+            ){
+                Text(
+                    text = "No transaction has done today",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextSecondary.copy(alpha = 0.4f),
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
 
         transactions.forEach { transaction ->
             val transactionCategory = categories.find { it.categoryId == transaction.categoryId }!!
@@ -243,7 +264,7 @@ private fun TransactionItem(
             }
 
             Text(
-                text = "${if(transaction.type == TransactionType.INCOME.value) "+" else "-"}${currency.symbol}${transaction.amount}",
+                text = "${if(transaction.type == TransactionType.INCOME.value) "+" else "-"}${currency.symbol}${AmountFormatter.formatAmount(transaction.amount)}",
                 style = MaterialTheme.typography.bodyLarge,
                 color = if(transaction.type == TransactionType.INCOME.value) IncomeGreen else ExpenseRed,
                 fontWeight = FontWeight.Bold
@@ -306,20 +327,22 @@ private fun ThisMonthSummerySection(
             MonthlySummeryCard(
                 modifier = Modifier.weight(1f),
                 titleText = "INCOME",
-                amountText = "${currency.symbol}${income}",
+                amount = income,
                 bottomLabelText = bottomIncomeLabelText,
                 bottomLabelColor = if(incomeComparedToLastMonth > 0) IncomeGreen else ExpenseRed,
                 topIcon = R.drawable.icon_arrow_up,
-                iconColor = IncomeGreen
+                iconColor = IncomeGreen,
+                currency = currency
             )
             MonthlySummeryCard(
                 modifier = Modifier.weight(1f),
                 titleText = "EXPENSE",
-                amountText = "${currency.symbol}${expense}",
+                amount = expense,
                 bottomLabelText = bottomExpanseLabelText,
                 bottomLabelColor = if(expenseComparedToLastMonth > 0) ExpenseRed else IncomeGreen,
                 topIcon = R.drawable.icon_arrow_down,
-                iconColor = ExpenseRed
+                iconColor = ExpenseRed,
+                currency = currency
             )
         }
 
@@ -330,12 +353,32 @@ private fun ThisMonthSummerySection(
 fun MonthlySummeryCard(
     modifier: Modifier = Modifier,
     titleText: String,
-    amountText: String,
+    amount: Double,
+    currency: Currency,
     bottomLabelText: String,
     bottomLabelColor: Color,
     @DrawableRes topIcon: Int,
     iconColor: Color
 ) {
+    val formattedAmount = remember (amount) { AmountFormatter.formatAmount(amount) }
+    var animationPlayed by remember { mutableStateOf(false) }
+    var isAnimationCompleted by remember { mutableStateOf(false) }
+    val animationProgress by animateFloatAsState(
+        targetValue = if(animationPlayed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = 0,
+            easing = FastOutSlowInEasing
+        ),
+        label = "categoryItemAnimation",
+        finishedListener = {
+            isAnimationCompleted = true
+        }
+    )
+    LaunchedEffect(Unit) {
+        delay(20)
+        animationPlayed = true
+    }
     Card(
         modifier = modifier
             .padding(2.dp),
@@ -379,7 +422,7 @@ fun MonthlySummeryCard(
                 )
             }
             Text(
-                text = amountText,
+                text = "${currency.symbol}${if(isAnimationCompleted) formattedAmount else round((amount * animationProgress) * 100) / 100}",
                 style = MaterialTheme.typography.titleLarge,
                 color = TextPrimary,
                 fontWeight = FontWeight.Bold
@@ -402,7 +445,26 @@ private fun TotalBalanceCard(
     incrementFromLastMonth: Double,
     currency: Currency
 ) {
-    val formattedBalance = "${if(balance<0) "-" else ""}${currency.symbol}${if(balance<0) balance*(-1) else balance}"
+    val balanceMod = remember { if(balance < 0) balance * (-1) else balance }
+    val balanceFormattedString = remember(balance) { AmountFormatter.formatAmount(balanceMod) }
+    var animationPlayed by remember { mutableStateOf(false) }
+    var isAnimationCompleted by remember { mutableStateOf(false) }
+    val animationProgress by animateFloatAsState(
+        targetValue = if(animationPlayed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = 0,
+            easing = FastOutSlowInEasing
+        ),
+        label = "categoryItemAnimation",
+        finishedListener = {
+            isAnimationCompleted = true
+        }
+    )
+    LaunchedEffect(Unit) {
+        delay(20)
+        animationPlayed = true
+    }
     val bottomLabelText = if(incrementFromLastMonth.isNaN() || incrementFromLastMonth.isInfinite()) "N/A"
     else "${if(incrementFromLastMonth > 0) "+" else ""}${incrementFromLastMonth}%"
     Card(
@@ -428,7 +490,7 @@ private fun TotalBalanceCard(
                     color = Color.White.copy(alpha = 0.7f)
                 )
                 Text(
-                    text = formattedBalance,
+                    text = "${if(balance<0) "-" else ""}${currency.symbol}${if(isAnimationCompleted) balanceFormattedString else round((balanceMod * animationProgress) * 100) / 100}",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.displaySmall,
                     color = Color.White

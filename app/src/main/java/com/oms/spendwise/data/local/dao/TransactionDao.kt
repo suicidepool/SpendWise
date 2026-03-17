@@ -2,13 +2,11 @@ package com.oms.spendwise.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.oms.spendwise.model.entity.Transaction
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 
 @Dao

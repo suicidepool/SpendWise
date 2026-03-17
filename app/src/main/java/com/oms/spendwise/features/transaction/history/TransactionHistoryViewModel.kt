@@ -26,4 +26,10 @@ class TransactionHistoryViewModel @Inject constructor() : ViewModel(){
     val onSearchTextChange = {text: String ->
         this.searchText = text
     }
+
+    fun reset(){
+        transactionTypeFilter = null
+        searchVisibility = false
+        searchText = ""
+    }
 }

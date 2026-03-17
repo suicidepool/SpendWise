@@ -1,6 +1,5 @@
 package com.oms.spendwise.data.repository
 
-import android.util.Log
 import com.oms.spendwise.data.local.dao.BudgetCategoryDao
 import com.oms.spendwise.data.local.dao.BudgetDao
 import com.oms.spendwise.model.entity.Budget

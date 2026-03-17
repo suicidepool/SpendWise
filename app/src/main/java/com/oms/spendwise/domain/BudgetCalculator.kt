@@ -31,7 +31,7 @@ class BudgetCalculator @Inject constructor() {
         var amountSpent = 0.0
         transactions.forEach { transaction ->
             val transactionDate = transaction.transactionDateTime.toLocalDate()
-            if(transaction.categoryId == categoryId && (transactionDate == startDate) || (transactionDate == endDate) || (transactionDate.isAfter(startDate) && transactionDate.isBefore(endDate))){
+            if(transaction.categoryId == categoryId && ((transactionDate == startDate) || (transactionDate == endDate) || (transactionDate.isAfter(startDate) && transactionDate.isBefore(endDate)))){
                 amountSpent += transaction.amount
             }
         }

@@ -1,6 +1,5 @@
 package com.oms.spendwise.domain
 
-import android.util.Log
 import javax.inject.Inject
 import kotlin.text.dropLast
 
@@ -15,8 +14,8 @@ class CalculatorEngine @Inject constructor() {
         ADD("+"), SUBTRACT("-"), MULTIPLY("×"), DIVIDE("÷")
     }
 
-    fun setCurrentInput(input: Double){
-        currentInput = input.toString()
+    fun setCurrentInput(input: String){
+        currentInput = input
         firstOperand = ""
         operator = null
         resetInput = false

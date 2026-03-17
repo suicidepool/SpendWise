@@ -1,8 +1,6 @@
 package com.oms.spendwise.navigation
 
-import androidx.annotation.DrawableRes
 import com.oms.spendwise.R
-import okhttp3.Route
 
 sealed class BottomNavigationItem (val name: String, val icon: Int, val route: String) {
     object Dashboard : BottomNavigationItem(

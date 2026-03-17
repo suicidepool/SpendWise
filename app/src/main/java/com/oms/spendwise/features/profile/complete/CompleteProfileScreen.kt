@@ -1,15 +1,12 @@
 package com.oms.spendwise.features.profile.complete
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -245,7 +242,6 @@ fun ProfileInfoInputSection(
         contract = CropImageContract()
     ) { result ->
         if(result.isSuccessful){
-            Log.d("IMAGE","hello")
             result.uriContent?.let{onProfileImageChange(it)}
         }
     }

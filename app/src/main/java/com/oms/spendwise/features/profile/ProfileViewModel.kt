@@ -3,17 +3,12 @@ package com.oms.spendwise.features.profile
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.TimePicker
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.oms.spendwise.data.local.dao.UserDao
 import com.oms.spendwise.data.repository.UserRepository
 import com.oms.spendwise.model.entity.User
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,6 +50,7 @@ class ProfileViewModel @Inject constructor(
                 user = userRepository.getUser()
                 isLoading = false
             } catch (e: Exception) {
+                e.printStackTrace()
                 isLoading = false
             }
         }

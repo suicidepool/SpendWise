@@ -63,6 +63,7 @@ import com.oms.spendwise.ui.theme.IncomeGreen
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.utils.AmountFormatter
 import java.util.Currency
 import kotlin.math.round
 
@@ -229,7 +230,7 @@ fun IncomeExpenseCard(
     currency: Currency,
     type: TransactionType
 ){
-    val formattedAmount = "${if(amount<0) "-" else ""}${currency.symbol}${if(amount<0) amount*(-1) else amount}"
+    val formattedAmount = "${if(amount<0) "-" else ""}${currency.symbol}${if(amount<0) AmountFormatter.formatAmount(amount*(-1)) else AmountFormatter.formatAmount(amount)}"
     val bottomLabelText = if(amountIncrementPercentage.isNaN() || amountIncrementPercentage.isInfinite()) "N/A"
     else "${if(amountIncrementPercentage > 0) "+" else ""}${amountIncrementPercentage}%"
     Card(
@@ -243,11 +244,11 @@ fun IncomeExpenseCard(
     ) {
         Column(
             modifier = Modifier
-                .padding(22.dp),
+                .padding(18.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(4.dp)
+                verticalArrangement = Arrangement.spacedBy(3.dp)
             ) {
                 Text(
                     text = titleText,
@@ -298,7 +299,7 @@ private fun TotalBalanceCard(
     type: String,
     currency: Currency,
 ) {
-    val formattedBalance = "${if(balance<0) "-" else ""}${currency.symbol}${if(balance<0) balance*(-1) else balance}"
+    val formattedBalance = "${if(balance<0) "-" else ""}${currency.symbol}${if(balance<0) AmountFormatter.formatAmount(balance*(-1)) else AmountFormatter.formatAmount(balance)}"
     val bottomLabelText = if(balanceIncrementPercentage.isNaN() || balanceIncrementPercentage.isInfinite()) "N/A"
     else "${if(balanceIncrementPercentage > 0) "+" else ""}${balanceIncrementPercentage}%"
     Card(
@@ -552,7 +553,7 @@ fun PieChart(
                         fontWeight = FontWeight.Normal
                     )
                     Text(
-                        text = currency.symbol + totalSum,
+                        text = "${currency.symbol}${AmountFormatter.formatAmount(totalSum)}",
                         style = MaterialTheme.typography.bodyLarge,
                         color = TextPrimary,
                         fontWeight = FontWeight.Bold
@@ -659,7 +660,7 @@ fun DetailsPieChartItem(
             }
 
             Text(
-                text = currency.symbol + data.second.toString() + "(${round(((data.second / total) * 100) * 100) / 100}%)",
+                text = currency.symbol + AmountFormatter.formatDecimal(data.second) + "(${round(((data.second / total) * 100) * 100) / 100}%)",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyLarge,
                 color = TextPrimary

@@ -87,6 +87,7 @@ import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.ui.theme.TextHint
+import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatDate
 import com.oms.spendwise.utils.formatTime
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -117,7 +118,7 @@ fun AddTransactionScreen(
                 transaction = transactionViewModel.getTransaction(transactionId)
                 transaction?.let {
                     addTransactionViewModel.onNoteChange(it.note)
-                    addTransactionViewModel.setAmount(it.amount)
+                    addTransactionViewModel.setAmount(AmountFormatter.formatDecimal(it.amount))
                     addTransactionViewModel.onTransactionDateTimeChange(it.transactionDateTime)
                     addTransactionViewModel.onTransactionTypeChange(
                         if(it.type == TransactionType.INCOME.value){

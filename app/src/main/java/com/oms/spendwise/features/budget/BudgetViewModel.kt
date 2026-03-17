@@ -1,6 +1,5 @@
 package com.oms.spendwise.features.budget
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,8 +7,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.oms.spendwise.data.repository.BudgetRepository
-import com.oms.spendwise.data.repository.CategoryRepository
-import com.oms.spendwise.data.repository.TransactionRepository
 import com.oms.spendwise.domain.BudgetCalculator
 import com.oms.spendwise.model.entity.Budget
 import com.oms.spendwise.model.entity.BudgetCategory
@@ -25,7 +22,6 @@ import kotlin.math.round
 @HiltViewModel
 class BudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
-    private val categoryRepository: CategoryRepository,
     private val budgetCalculator: BudgetCalculator
 ): ViewModel() {
 
@@ -82,7 +78,6 @@ class BudgetViewModel @Inject constructor(
         categories: SnapshotStateList<Pair<Category, String>>
     ){
         budget?.let { budget ->
-            Log.d("BUDGET","inside update")
             viewModelScope.launch {
                 budgetRepository.updateBudget(
                     budgetId = budget.budgetId,
@@ -151,7 +146,7 @@ class BudgetViewModel @Inject constructor(
         start: LocalDate,
         end: LocalDate
     ): Int {
-        return ChronoUnit.DAYS.between(start, end).toInt()
+        return ChronoUnit.DAYS.between(start, end).toInt() + 1
     }
 
     fun getAmountSpent(

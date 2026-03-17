@@ -6,14 +6,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.text.DecimalFormat
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.math.abs
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor() : ViewModel() {
@@ -35,6 +33,11 @@ class CalendarViewModel @Inject constructor() : ViewModel() {
 
     val shiftPrevMonth = {
         yearMonth = yearMonth.minusMonths(1)
+        createCalendar()
+    }
+
+    val resetYearMonth = {
+        yearMonth = YearMonth.now()
         createCalendar()
     }
 

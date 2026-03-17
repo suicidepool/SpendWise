@@ -2,6 +2,7 @@ package com.oms.spendwise.features.transaction.history
 
 import android.content.Context
 import android.icu.text.StringSearch
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,8 +72,14 @@ fun TransactionHistoryScreen(
     currency: Currency,
     context: Context,
     transactionHistoryVm: TransactionHistoryViewModel,
-    onItemClick: (transactionId: Long) -> Unit
+    onItemClick: (transactionId: Long) -> Unit,
+    onBack: () -> Unit
 ) {
+
+    BackHandler() {
+        transactionHistoryVm.reset()
+        onBack()
+    }
 
     Scaffold(
         modifier = modifier,
@@ -85,8 +92,12 @@ fun TransactionHistoryScreen(
                 searchBarVisibility = transactionHistoryVm.searchVisibility,
                 toggleSearchBarVisibility = {transactionHistoryVm.onSearchVisibilityChange(!transactionHistoryVm.searchVisibility)},
                 searchText = transactionHistoryVm.searchText,
-                onSearchTextChange = transactionHistoryVm.onSearchTextChange
-            ) { }
+                onSearchTextChange = transactionHistoryVm.onSearchTextChange,
+                onBack = {
+                    transactionHistoryVm.reset()
+                    onBack()
+                }
+            )
         }
     ) { innerPadding ->
         Column(

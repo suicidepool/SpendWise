@@ -8,7 +8,6 @@ import com.oms.spendwise.data.local.dao.CategoryDao
 import com.oms.spendwise.data.local.dao.TransactionDao
 import com.oms.spendwise.data.local.dao.UserDao
 import com.oms.spendwise.data.local.database.AppDatabase
-import com.oms.spendwise.model.entity.BudgetCategory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

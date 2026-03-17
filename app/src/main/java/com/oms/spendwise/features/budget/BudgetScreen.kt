@@ -1,10 +1,11 @@
 package com.oms.spendwise.features.budget
 
 import android.content.Context
-import androidx.compose.animation.core.VisibilityThreshold
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,28 +45,25 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.size.Dimension
 import com.oms.spendwise.R
 import com.oms.spendwise.model.entity.BudgetCategory
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.entity.Transaction
-import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.ui.theme.BackgroundElevated
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.ExpenseRed
-import com.oms.spendwise.ui.theme.IncomeGreen
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.PrimaryBlueLight
 import com.oms.spendwise.ui.theme.RedButton
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
-import com.oms.spendwise.utils.formatTime
+import com.oms.spendwise.utils.AmountFormatter
+import kotlinx.coroutines.delay
 import java.util.Currency
+import kotlin.math.round
 
 @Composable
 fun BudgetScreen(
@@ -231,17 +228,42 @@ private fun BudgetCategoryItem(
     context: Context,
     currency: Currency
 ) {
+    val amountSpentFormattedString = remember(amountSpent) { AmountFormatter.formatDecimal(amountSpent) }
+    val amountLimitFormattedString = remember(amountLimit) {AmountFormatter.formatDecimal(amountLimit)}
+    var animationPlayed by remember { mutableStateOf(false) }
+    var isAnimationCompleted by remember { mutableStateOf(false) }
+    val progress = if(amountSpent < amountLimit) {
+        amountSpent.toFloat() / amountLimit.toFloat()
+    } else {
+        1f
+    }
+    val animationProgress by animateFloatAsState(
+        targetValue = if(animationPlayed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 1000,
+            delayMillis = 0,
+            easing = FastOutSlowInEasing
+        ),
+        label = "categoryItemAnimation",
+        finishedListener = {
+            isAnimationCompleted = true
+        }
+    )
+    LaunchedEffect(Unit) {
+        delay(200)
+        animationPlayed = true
+    }
     Card(
         modifier = modifier
-            .padding(2.dp)
+            .padding(1.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        elevation = CardDefaults.cardElevation(2.dp),
     ){
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -253,19 +275,23 @@ private fun BudgetCategoryItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                val iconId = context.resources.getIdentifier(
-                    category.icon,
-                    "drawable",
-                    context.packageName
-                )
+                val iconId = remember {
+                    context.resources.getIdentifier(
+                        category.icon,
+                        "drawable",
+                        context.packageName
+                    )
+                }
 
-                val iconColor = Color(0xFF000000 + category.colorHex.toLong(16))
+                val iconColor = remember {
+                    Color(0xFF000000 + category.colorHex.toLong(16))
+                }
 
                 Box(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(iconColor.copy(0.17f)),
+                        .background(if(amountSpent < amountLimit) iconColor.copy(0.17f) else ExpenseRed.copy(0.17f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -278,7 +304,7 @@ private fun BudgetCategoryItem(
 
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
                     Row (
                         modifier = Modifier.fillMaxWidth(),
@@ -304,7 +330,7 @@ private fun BudgetCategoryItem(
                             )
                         }
                         Text(
-                            text = "${currency.symbol}$amountSpent / ${currency.symbol}$amountLimit",
+                            text = "${currency.symbol}${if(isAnimationCompleted) amountSpentFormattedString else (amountSpent * animationProgress).toInt()} / ${currency.symbol}${amountLimitFormattedString}",
                             style = MaterialTheme.typography.bodyMedium,
                             color = if(amountSpent < amountLimit) TextPrimary else ExpenseRed,
                             fontWeight = FontWeight.Bold
@@ -315,26 +341,23 @@ private fun BudgetCategoryItem(
                     Canvas(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(8.dp)
+                            .height(6.dp)
+                            .padding(horizontal = 3.dp)
                     ) {
-                        val progress = if(amountSpent <= amountLimit) {
-                            amountSpent.toFloat() / amountLimit.toFloat()
-                        } else {
-                            1f
-                        }
                         drawLine(
                             color = PrimaryBlueLight.copy(alpha = 0.2f),
                             start = Offset(0f, size.height / 2),
                             end = Offset(size.width, size.height / 2),
-                            strokeWidth = 8.dp.toPx(),
+                            strokeWidth = 6.dp.toPx(),
                             cap = StrokeCap.Round
                         )
 
+                        if(progress != 0f)
                         drawLine(
                             color = if(amountSpent >= amountLimit) ExpenseRed else iconColor,
                             start = Offset(0f, size.height / 2),
-                            end = Offset(size.width * progress, size.height / 2),
-                            strokeWidth = 8.dp.toPx(),
+                            end = Offset(size.width * (progress * animationProgress), size.height / 2),
+                            strokeWidth = 6.dp.toPx(),
                             cap = StrokeCap.Round
                         )
 
@@ -355,6 +378,33 @@ private fun BudgetCard(
     remainingBalance: Double,
     percentSpent: Double
 ) {
+    val remainingBalanceMod = if(remainingBalance < 0) remainingBalance * (-1) else remainingBalance
+    val amountSpentFormattedString = remember(balanceSpent) { AmountFormatter.formatAmount(balanceSpent) }
+    val amountLimitFormattedString = remember(balanceLimit) {AmountFormatter.formatAmount(balanceLimit)}
+    val remainingBalanceFormattedString = remember(balanceLimit) {AmountFormatter.formatAmount(remainingBalanceMod)}
+    var animationPlayed by remember { mutableStateOf(false) }
+    var isAnimationCompleted by remember { mutableStateOf(false) }
+    val progress = if(balanceSpent < balanceLimit) {
+        balanceSpent.toFloat() / balanceLimit.toFloat()
+    } else {
+        1f
+    }
+    val animationProgress by animateFloatAsState(
+        targetValue = if(animationPlayed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 500,
+            delayMillis = 0,
+            easing = FastOutSlowInEasing
+        ),
+        label = "categoryItemAnimation",
+        finishedListener = {
+            isAnimationCompleted = true
+        }
+    )
+    LaunchedEffect(Unit) {
+        delay(20)
+        animationPlayed = true
+    }
     Card(
         modifier = modifier
             .fillMaxWidth(),
@@ -367,7 +417,7 @@ private fun BudgetCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(22.dp)
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -379,7 +429,7 @@ private fun BudgetCard(
                     color = TextSecondary
                 )
                 Text(
-                    text = "${if(remainingBalance<0) "-" else ""}${currency.symbol}${if(remainingBalance<0) remainingBalance*(-1) else remainingBalance}",
+                    text = "${if(remainingBalance<0) "-" else ""}${currency.symbol}${if(isAnimationCompleted) remainingBalanceFormattedString else round((remainingBalanceMod * animationProgress) * 100)/100}",
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
                     color = TextPrimary
@@ -395,13 +445,13 @@ private fun BudgetCard(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Spent: ${currency.symbol}$balanceSpent",
+                        text = "Spent: ${currency.symbol}${if(isAnimationCompleted) amountSpentFormattedString else round((balanceSpent * animationProgress) * 100)/100}",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = TextSecondary
                     )
                     Text(
-                        text = "Limit: ${currency.symbol}$balanceLimit",
+                        text = "Limit: ${currency.symbol}$amountLimitFormattedString",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = TextSecondary
@@ -412,12 +462,8 @@ private fun BudgetCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(12.dp)
+                        .padding(horizontal = 6.dp)
                 ) {
-                    val progress = if(balanceSpent <= balanceLimit) {
-                        balanceSpent.toFloat() / balanceLimit.toFloat()
-                    } else {
-                        1f
-                    }
                     drawLine(
                         color = PrimaryBlueLight.copy(alpha = 0.2f),
                         start = Offset(0f, size.height / 2),
@@ -426,10 +472,11 @@ private fun BudgetCard(
                         cap = StrokeCap.Round
                     )
 
+                    if(progress != 0f)
                     drawLine(
                         color = if(balanceSpent >= balanceLimit) ExpenseRed else PrimaryBlue,
                         start = Offset(0f, size.height / 2),
-                        end = Offset(size.width * progress, size.height / 2),
+                        end = Offset(size.width * (progress * animationProgress), size.height / 2),
                         strokeWidth = 12.dp.toPx(),
                         cap = StrokeCap.Round
                     )
@@ -441,7 +488,7 @@ private fun BudgetCard(
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "$percentSpent% of budget used",
+                        text = "${if(isAnimationCompleted) percentSpent else round((percentSpent * animationProgress) * 100)/100}% of budget used",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
                         color = TextSecondary.copy(alpha = 0.6f)

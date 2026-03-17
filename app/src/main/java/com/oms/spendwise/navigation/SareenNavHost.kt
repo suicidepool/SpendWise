@@ -128,7 +128,10 @@ fun ScreenNavHost(
                     onItemClick = { transactionId ->
                         navController.navigate(Screen.TransactionDetailsScreen.createRoute(transactionId))
                     },
-                    transactionHistoryVm = transactionHistoryViewModel
+                    transactionHistoryVm = transactionHistoryViewModel,
+                    onBack = {
+                        navController.popBackStack()
+                    }
                 )
         }
 
@@ -229,6 +232,7 @@ fun ScreenNavHost(
                 resetAllData = {
                     transactionViewModel.deleteAllTransactions()
                     profileViewModel.resetAllData()
+                    budgetViewModel.deleteAllBudgets()
                     navController.navigate(Screen.CompleteProfileScreen.route)
                 }
             )

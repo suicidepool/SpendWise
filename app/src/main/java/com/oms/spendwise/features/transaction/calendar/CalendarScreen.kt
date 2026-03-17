@@ -1,25 +1,20 @@
 package com.oms.spendwise.features.transaction.calendar
 
-import android.graphics.Paint
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +25,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,22 +38,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalGraphicsContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.sp
 import com.oms.spendwise.R
 import com.oms.spendwise.features.transaction.TransactionViewModel
-import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.CardBorder
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.ExpenseRed
@@ -69,11 +62,8 @@ import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.YearMonth
-import java.util.Calendar
 import java.util.Currency
 import java.util.Locale
-import kotlin.math.exp
 
 @Composable
 fun CalendarScreen(
@@ -84,15 +74,32 @@ fun CalendarScreen(
     onDateClick: (LocalDate) -> Unit,
     onBack: () -> Unit
 ) {
+
+    var isForwardAnimation by remember { mutableStateOf(false) }
+
+    BackHandler() {
+        calendarViewModel.resetYearMonth()
+        onBack()
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
             TopBar(
                 modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
                 yearMonth = calendarViewModel.getFormatedYearMonth(),
-                nextMonth = calendarViewModel.shiftNextMonth,
-                prevMonth = calendarViewModel.shiftPrevMonth,
-                onBack = onBack
+                nextMonth = {
+                    isForwardAnimation = true
+                    calendarViewModel.shiftNextMonth()
+                },
+                prevMonth = {
+                    isForwardAnimation = false
+                    calendarViewModel.shiftPrevMonth()
+                },
+                onBack = {
+                    calendarViewModel.resetYearMonth()
+                    onBack()
+                }
             )
         }
 
@@ -108,10 +115,17 @@ fun CalendarScreen(
                     .fillMaxWidth(),
                 targetState = calendarViewModel.yearMonth,
                 transitionSpec = {
-                    slideInHorizontally { width -> width } + fadeIn() togetherWith
-                            slideOutHorizontally { width -> -width } + fadeOut()
+                    if(isForwardAnimation){
+                        slideInHorizontally { width -> width } + fadeIn() togetherWith
+                                slideOutHorizontally { width -> -width } + fadeOut()
+                    }
+                    else{
+                        slideInHorizontally { width -> -width } + fadeIn() togetherWith
+                                slideOutHorizontally { width -> width } + fadeOut()
+                    }
+
                 },
-                label = ""
+                label = "calendarSlideAnimation"
             ) { yearMonth ->
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -331,6 +345,10 @@ fun CalendarDateCard(
         elevation = CardDefaults.cardElevation(1.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if(date == LocalDate.now()) PrimaryBlue else Color.Transparent
         )
     ) {
         Column(
@@ -417,7 +435,7 @@ private fun TopBar(
                 painter = painterResource(R.drawable.icon_back_arrow),
                 contentDescription = "back",
                 modifier = Modifier.size(28.dp),
-                tint = PrimaryBlue
+                tint = TextPrimary
             )
         }
 

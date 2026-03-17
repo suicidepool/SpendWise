@@ -1,8 +1,6 @@
 package com.oms.spendwise.data.repository
 
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.runtime.toMutableStateList
 import com.oms.spendwise.data.local.dao.CategoryDao
 import com.oms.spendwise.model.entity.Category
 import javax.inject.Inject

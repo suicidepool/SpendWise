@@ -10,7 +10,6 @@ import androidx.core.net.toUri
 import com.oms.spendwise.data.local.dao.UserDao
 import com.oms.spendwise.model.entity.User
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.internal.http2.Http2Connection
 import java.io.File
 import java.io.FileOutputStream
 import java.time.DayOfWeek
@@ -18,7 +17,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.jvm.Throws
 
 @Singleton
 class UserRepository @Inject constructor(

@@ -67,6 +67,7 @@ import com.oms.spendwise.ui.theme.RedButton
 import com.oms.spendwise.ui.theme.TextHint
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatDateTime
 import kotlinx.coroutines.launch
 import java.util.Currency
@@ -118,7 +119,7 @@ fun TransactionDetailsScreen(
         ) {
             transaction?.let{ transaction ->
                 AmountSection(
-                    transactionAmount = transaction.amount.toString(),
+                    transactionAmount = AmountFormatter.formatAmount(transaction.amount),
                     transactionType = transaction.type,
                     currency = currency
                 )

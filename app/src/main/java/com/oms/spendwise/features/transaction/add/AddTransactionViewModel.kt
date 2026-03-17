@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel
 import com.oms.spendwise.domain.CalculatorEngine
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.enum.TransactionType
+import com.oms.spendwise.utils.AmountFormatter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.Instant
 import java.time.LocalDate
@@ -38,9 +39,9 @@ class AddTransactionViewModel @Inject constructor(
         this.transactionDateTime = localDateTime
     }
 
-    fun setAmount(amount: Double){
+    fun setAmount(amount: String){
         calculator.setCurrentInput(amount)
-        firstOperand = amount.toString()
+        firstOperand = amount
         secondOperand = ""
         operator = null
     }

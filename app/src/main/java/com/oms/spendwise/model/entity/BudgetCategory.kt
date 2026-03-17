@@ -1,6 +1,5 @@
 package com.oms.spendwise.model.entity
 
-import android.adservices.adid.AdId
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
