@@ -2,10 +2,8 @@ package com.oms.spendwise.features.transaction.add
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -34,10 +30,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -62,43 +56,29 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.stylusHoverIcon
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.translationMatrix
-import coil.size.Dimension
 import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
 import com.oms.spendwise.ui.theme.Dimens
-import com.oms.spendwise.ui.theme.InputFieldContainer
-import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
 import com.oms.spendwise.R
 import com.oms.spendwise.domain.CalculatorEngine
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.model.entity.Category
-import com.oms.spendwise.ui.theme.TextHint
 import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatDate
 import com.oms.spendwise.utils.formatTime
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
-import okhttp3.internal.format
-import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
-import kotlin.math.round
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -302,6 +282,8 @@ fun AddTransactionScreen(
                 },
                 timePickerState = timePickerState
             )
+
+            Spacer(Modifier.height(12.dp))
         }
     }
 }
@@ -325,7 +307,7 @@ private fun TopBar(
                 painter = painterResource(R.drawable.icon_cross),
                 contentDescription = "Close",
                 modifier = Modifier.size(18.dp),
-                tint = TextPrimary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -333,7 +315,7 @@ private fun TopBar(
             text = title,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Box(Modifier.size(42.dp))
@@ -350,7 +332,7 @@ private fun TransactionTypeSelectSection(
         modifier = modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(10.dp))
-            .background(color = InputFieldContainer)
+            .background(color = MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -385,8 +367,8 @@ private fun TransactionTypeButton(
         onClick = onClick,
         shape = RoundedCornerShape(cornerSize),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if(isSelected) Color.White else Color.Transparent,
-            contentColor = if(isSelected) PrimaryBlue else TextSecondary
+            containerColor = if(isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
+            contentColor = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
@@ -415,7 +397,7 @@ private fun AmountSection(
             text = amountText,
             style = MaterialTheme.typography.displayLarge,
             fontWeight = FontWeight.Bold,
-            color = PrimaryBlue
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -430,7 +412,7 @@ private fun CalculatorKeypad(
         modifier = modifier
             .fillMaxWidth()
             .height(IntrinsicSize.Min)
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.surface)
     ) {
         //left side
         Column(
@@ -481,7 +463,7 @@ private fun CalculatorKeypad(
                                     text = key,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = PrimaryBlue
+                                    color = MaterialTheme.colorScheme.primary
                                 )
                             }
                         } else if(numbers.contains(key)) {
@@ -495,7 +477,7 @@ private fun CalculatorKeypad(
                                     text = key,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = TextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         } else if(key == "00"){
@@ -509,7 +491,7 @@ private fun CalculatorKeypad(
                                     text = key,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = TextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         } else if(key == "."){
@@ -523,7 +505,7 @@ private fun CalculatorKeypad(
                                     text = key,
                                     fontSize = 22.sp,
                                     fontWeight = FontWeight.Medium,
-                                    color = TextPrimary
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                         }
@@ -553,7 +535,7 @@ private fun CalculatorKeypad(
                 Icon(
                     painter = painterResource(R.drawable.icon_delete),
                     contentDescription = "Confirm",
-                    tint = TextSecondary,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(22.dp)
                 )
             }
@@ -562,7 +544,7 @@ private fun CalculatorKeypad(
                     .weight(3f)
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(8.dp))
-                    .background(PrimaryBlue)
+                    .background(MaterialTheme.colorScheme.primary)
                     .clickable {
                         if (addTransactionViewModel.operator != null && addTransactionViewModel.secondOperand.isNotEmpty()) {
                             addTransactionViewModel.onEqualClick()
@@ -576,14 +558,14 @@ private fun CalculatorKeypad(
                     Icon(
                         painter = painterResource(R.drawable.icon_equals),
                         contentDescription = "Confirm",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 } else{
                     Icon(
                         painter = painterResource(R.drawable.icon_check),
                         contentDescription = "Confirm",
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -602,7 +584,7 @@ private fun CalculatorButton(
         modifier = modifier
             .height(48.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(InputFieldContainer)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
@@ -627,7 +609,7 @@ private fun SelectCategorySection(
         Text(
             text = "SELECT CATEGORY",
             style = MaterialTheme.typography.labelSmall,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding)
         )
@@ -667,7 +649,7 @@ private fun SelectCategorySection(
                             .clickable { onSelectedCategoryChange(category) }
                             .border(
                                 width = 2.dp,
-                                color = if (selectedCategory == category) PrimaryBlue else Color.Transparent,
+                                color = if (selectedCategory == category) MaterialTheme.colorScheme.primary else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             ),
                         contentAlignment = Alignment.Center
@@ -682,7 +664,7 @@ private fun SelectCategorySection(
                     Text(
                         text = category.name,
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -703,7 +685,7 @@ private fun AddNoteSection(
             .shadow(
                 elevation = 3.dp,
                 shape = RoundedCornerShape(12.dp),
-                spotColor = Color.Black.copy(alpha = .2f),
+                spotColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             .clip(RoundedCornerShape(12.dp)),
         contentAlignment = Alignment.Center
@@ -712,7 +694,7 @@ private fun AddNoteSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
-                .background(Color.White),
+                .background(MaterialTheme.colorScheme.surface),
             value = note,
             onValueChange = onNoteChange,
             singleLine = true,
@@ -721,22 +703,22 @@ private fun AddNoteSection(
                 Text(
                     text = "Add Note",
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextHint
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             leadingIcon = {
                 Icon(
                     painter = painterResource(R.drawable.icon_note),
                     contentDescription = "note",
-                    tint = TextHint,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
             },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
-                focusedTextColor = TextPrimary,
-                unfocusedTextColor = TextPrimary
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             )
         )
     }
@@ -758,7 +740,7 @@ private fun DateSelectSection (
             .shadow(
                 elevation = 3.dp,
                 shape = RoundedCornerShape(12.dp),
-                spotColor = Color.Black.copy(alpha = .2f),
+                spotColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = {showDatePicker = true})
@@ -766,7 +748,7 @@ private fun DateSelectSection (
         Row(
             modifier = Modifier.fillMaxWidth()
                 .background(
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.surface
                 )
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -774,14 +756,14 @@ private fun DateSelectSection (
             Icon(
                 painter = painterResource(R.drawable.icon_calendar),
                 contentDescription = "date pick",
-                tint = TextHint,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .size(18.dp)
             )
             Text(
                 text = transactionDate,
                 style = MaterialTheme.typography.labelMedium,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -824,9 +806,9 @@ private fun TimeSelectSection(
     Box(
         modifier = modifier
             .shadow(
-                elevation = 2.dp,
+                elevation = 3.dp,
                 shape = RoundedCornerShape(12.dp),
-                spotColor = Color.Black.copy(alpha = .2f),
+                spotColor = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = {showDialog = true})
@@ -834,7 +816,7 @@ private fun TimeSelectSection(
         Row(
             modifier = Modifier.fillMaxWidth()
                 .background(
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.surface
                 )
                 .padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -842,14 +824,14 @@ private fun TimeSelectSection(
             Icon(
                 painter = painterResource(R.drawable.icon_clock),
                 contentDescription = "date pick",
-                tint = TextHint,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier
                     .size(16.dp)
             )
             Text(
                 text = transactionTime,
                 style = MaterialTheme.typography.labelMedium,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }

@@ -12,7 +12,7 @@ val PrimaryBlueDark = Color(0xFF163A75)
 
 val BackgroundPrimary = Color(0xFFF8F9FC)
 val BackgroundSecondary = Color(0xFFFFFFFF)
-val BackgroundElevated = Color(0xFFF1F3F9)
+val BackgroundElevated = Color(0xFFD9DCE2)
 
 /* ========== Surface / Cards ========== */
 
@@ -25,6 +25,7 @@ val TextPrimary = Color(0xFF1A1A1A)
 val TextSecondary = Color(0xFF6B7280)
 val TextHint = Color(0xFF9CA3AF)
 val TextOnPrimary = Color(0xFFFFFFFF)
+val TextOnPrimaryDark = Color(0xFF050505)
 
 /* ========== Semantic Colors (Finance specific 🔥) ========== */
 
@@ -35,13 +36,15 @@ val WarningOrange = Color(0xFFF59E0B)
 /* ========== Chart Colors ========== */
 
 val ChartBlue = Color(0xFF3B82F6)
-val ChartGreen = Color(0xFF10B981)
-val RedButton = Color(0xFFDC2626)
+val SuccessGreen = Color(0xFF10B981)
+val AlertRed = Color(0xFFDC2626)
 val ChartPurple = Color(0xFF8B5CF6)
 
 /* ========== Divider & Borders ========== */
 
-val DividerColor = Color(0xFFE5E7EB)
+val DividerColor = Color(0xFFD1D5DB)
+val DividerColorDark = Color(0xFF43515F)
+val OutlineColor = Color(0xFFBABEC4)
 val InputFieldBorder = Color(0xFFD1D5DB)
 val InputFieldContainer = Color(0xFFE8E8EF)
 

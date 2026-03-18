@@ -1,9 +1,10 @@
 package com.oms.spendwise.features.app
 
 import android.content.Context
-import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -32,12 +32,12 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.size.Size
 import com.oms.spendwise.features.budget.BudgetViewModel
 import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.features.transaction.TransactionViewModel
@@ -51,7 +51,6 @@ import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.PrimaryBlueLight
-import com.oms.spendwise.ui.theme.TextPrimary
 import kotlinx.coroutines.launch
 
 @Composable
@@ -86,7 +85,8 @@ fun App(
 
     Box(
         modifier = modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .background(color = MaterialTheme.colorScheme.background),
         contentAlignment = Alignment.BottomCenter
     ) {
         ScreenNavHost(
@@ -132,19 +132,18 @@ private fun BottomBar(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .navigationBarsPadding(),
+            .background(color = MaterialTheme.colorScheme.surface),
     ) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 0.7.dp,
-            color = Color.LightGray.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.outlineVariant
         )
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp)
-                .background(color = Color.White),
+                .height(76.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -201,8 +200,14 @@ private fun BottomBar(
             )
         }
 
+        Spacer(
+            modifier = Modifier
+                .navigationBarsPadding()
+        )
+
     }
 
+    //add button
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -213,10 +218,10 @@ private fun BottomBar(
         Box(
             modifier = Modifier
                 .background(
-                    color = PrimaryBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(Dimens.CardCornerRadius)
                 )
-                .size(52.dp)
+                .size(56.dp)
                 .shadow(
                     elevation = 8.dp,
                     spotColor = PrimaryBlueLight,
@@ -234,7 +239,7 @@ private fun BottomBar(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
-                        color = PrimaryBlue,
+                        color = MaterialTheme.colorScheme.primary,
                         shape = RoundedCornerShape(Dimens.CardCornerRadius)
                     ),
                 contentAlignment = Alignment.Center
@@ -243,7 +248,7 @@ private fun BottomBar(
                     painter = painterResource(BottomNavigationItem.Add.icon),
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
-                    tint = BackgroundPrimary
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
@@ -258,6 +263,14 @@ private fun BottomNavigationItem(
     name: String,
     onClick: () -> Unit
 ) {
+    val animateSize by animateFloatAsState(
+        targetValue = if(isSelected) 1.25f else 1f,
+        animationSpec = tween(
+            durationMillis = 140,
+            delayMillis = 0,
+            easing = LinearOutSlowInEasing
+        )
+    )
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -269,13 +282,13 @@ private fun BottomNavigationItem(
             painter = painterResource(icon),
             contentDescription = null,
             modifier = Modifier
-                .size(18.dp),
-            tint = if(isSelected) PrimaryBlue else PrimaryBlue.copy(alpha = 0.5f)
+                .size((18 * animateSize).dp),
+            tint = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )
         Text(
             text = name,
             fontSize = 11.sp,
-            color = if(isSelected) PrimaryBlue else PrimaryBlue.copy(alpha = 0.5f),
+            color = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = if(isSelected) FontWeight.Bold else FontWeight.SemiBold
         )
     }

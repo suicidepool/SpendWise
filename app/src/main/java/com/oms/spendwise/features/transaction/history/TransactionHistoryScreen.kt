@@ -1,16 +1,10 @@
 package com.oms.spendwise.features.transaction.history
 
 import android.content.Context
-import android.icu.text.StringSearch
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,14 +12,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -34,35 +25,19 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.focusModifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.oms.spendwise.R
 import com.oms.spendwise.features.transaction.TransactionViewModel
-import com.oms.spendwise.model.entity.Category
-import com.oms.spendwise.model.entity.Transaction
+import com.oms.spendwise.features.transaction.components.Overview
+import com.oms.spendwise.features.transaction.components.TransactionItem
 import com.oms.spendwise.model.enum.TransactionType
-import com.oms.spendwise.ui.theme.ExpenseRed
-import com.oms.spendwise.ui.theme.IncomeGreen
-import com.oms.spendwise.ui.theme.InputFieldBorder
-import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.TextHint
-import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatDate
-import com.oms.spendwise.utils.formatTime
 import java.util.Currency
 
 @Composable
@@ -149,14 +124,14 @@ fun SearchedTransactions(
                     Spacer(Modifier.height(2.dp))
                     Text(
                         text = formatDate(date),
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelLarge
                     )
                     Spacer(Modifier.height(8.dp))
                     Overview(
-                        totalIncome = "+${currency.symbol}${transactionVM.getTotalIncome(date)}",
-                        totalExpense = "-${currency.symbol}${transactionVM.getTotalExpense(date)}"
+                        totalIncome = "+${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalIncome(date))}",
+                        totalExpense = "-${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalExpense(date))}"
                     )
                     Spacer(Modifier.height(14.dp))
                 }
@@ -202,14 +177,14 @@ fun FilteredTransactions(
                     Spacer(Modifier.height(2.dp))
                     Text(
                         text = formatDate(date),
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelLarge
                     )
                     Spacer(Modifier.height(8.dp))
                     Overview(
-                        totalIncome = "+${currency.symbol}${transactionVM.getTotalIncome(date)}",
-                        totalExpense = "-${currency.symbol}${transactionVM.getTotalExpense(date)}"
+                        totalIncome = "+${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalIncome(date))}",
+                        totalExpense = "-${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalExpense(date))}"
                     )
                     Spacer(Modifier.height(14.dp))
                 } else {
@@ -218,14 +193,14 @@ fun FilteredTransactions(
                         Spacer(Modifier.height(2.dp))
                         Text(
                             text = formatDate(date),
-                            color = TextSecondary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.labelLarge
                         )
                         Spacer(Modifier.height(8.dp))
                         Overview(
-                            totalIncome = "+${currency.symbol}${transactionVM.getTotalIncome(date)}",
-                            totalExpense = "-${currency.symbol}${transactionVM.getTotalExpense(date)}"
+                            totalIncome = "+${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalIncome(date))}",
+                            totalExpense = "-${currency.symbol}${AmountFormatter.formatAmount(transactionVM.getTotalExpense(date))}"
                         )
                         Spacer(Modifier.height(14.dp))
                     }
@@ -260,140 +235,6 @@ fun FilteredTransactions(
         items(1){
             Spacer(Modifier.height(110.dp))
         }
-    }
-}
-
-@Composable
-fun Overview(
-    modifier: Modifier = Modifier,
-    totalIncome: String,
-    totalExpense: String
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OverviewItemCard(
-            modifier = Modifier.weight(1f),
-            amount = totalIncome,
-            type = TransactionType.INCOME
-        )
-        OverviewItemCard(
-            modifier = Modifier.weight(1f),
-            amount = totalExpense,
-            type = TransactionType.EXPENSE
-        )
-    }
-}
-
-@Composable
-fun OverviewItemCard(
-    modifier: Modifier = Modifier,
-    amount: String,
-    type: TransactionType
-) {
-    Card(
-        modifier = modifier
-            .padding(2.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(2.dp)
-    ) {
-       Column(
-           modifier = Modifier
-               .fillMaxWidth()
-               .padding(12.dp),
-           verticalArrangement = Arrangement.spacedBy(4.dp)
-       ) {
-           Text(
-               text = "TOTAL ${if(type == TransactionType.INCOME) "INCOME" else "EXPENSE"}",
-               color = TextSecondary,
-               fontWeight = FontWeight.Bold,
-               style = MaterialTheme.typography.bodyMedium
-           )
-
-           Text(
-               text = amount,
-               color = if(type == TransactionType.INCOME) IncomeGreen else ExpenseRed,
-               fontWeight = FontWeight.Bold,
-               style = MaterialTheme.typography.bodyLarge,
-           )
-       }
-    }
-}
-
-@Composable
-fun TransactionItem(
-    modifier: Modifier = Modifier,
-    transaction: Transaction,
-    category: Category,
-    context: Context,
-    currency: Currency,
-    onClick: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(
-                onClick = onClick
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            val iconId = context.resources.getIdentifier(
-                category.icon,
-                "drawable",
-                context.packageName
-            )
-
-            val iconColor = Color(0xFF000000 + category.colorHex.toLong(16))
-
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(iconColor.copy(0.17f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(iconId),
-                    contentDescription = "Confirm",
-                    tint = iconColor,
-                    modifier = Modifier.size(18.dp)
-                )
-            }
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(0.dp),
-            ) {
-                Text(
-                    text = category.name,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimary,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = formatTime(transaction.transactionDateTime.toLocalTime()),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = TextSecondary
-                )
-            }
-        }
-
-        Text(
-            text = "${if(transaction.type == TransactionType.INCOME.value) "+" else "-"}${currency.symbol}${transaction.amount}",
-            style = MaterialTheme.typography.bodyLarge,
-            color = if(transaction.type == TransactionType.INCOME.value) IncomeGreen else ExpenseRed,
-            fontWeight = FontWeight.Bold
-        )
     }
 }
 
@@ -435,7 +276,7 @@ private fun TopBar(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
 
@@ -450,7 +291,8 @@ private fun TopBar(
                     painter = if(searchBarVisibility) painterResource(R.drawable.icon_cross) else painterResource(R.drawable.icon_search),
                     contentDescription = "search",
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(16.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -469,24 +311,24 @@ private fun TopBar(
                     Text(
                         text = "e.g. Income",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextHint
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.icon_search),
                         contentDescription = "note",
-                        tint = TextHint,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                 },
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = InputFieldBorder,
-                    unfocusedBorderColor = InputFieldBorder,
-                    focusedTextColor = TextPrimary,
-                    unfocusedTextColor = TextPrimary,
-                    focusedContainerColor = Color.White,
-                    unfocusedContainerColor = Color.White
+                    focusedBorderColor = MaterialTheme.colorScheme.outline,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                    focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                    focusedContainerColor = MaterialTheme.colorScheme.surface,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surface
                 ),
                 trailingIcon = {
                     IconButton(
@@ -508,70 +350,62 @@ private fun TopBar(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Button(
+                FilterButton(
                     onClick = {
                         onTransactionTypeFilterChange(null)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if(transactionTypeFilter == null) PrimaryBlue else Color.White,
-                        contentColor = if(transactionTypeFilter == null) Color.White else TextPrimary
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(
-                        width = if(transactionTypeFilter == null) 0.dp else 1.dp,
-                        color = InputFieldBorder
-                    ),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Text(
-                        text = "All",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-
-                Button(
+                    text = "All",
+                    transactionTypeFilter = transactionTypeFilter,
+                    filterType = null
+                )
+                FilterButton(
                     onClick = {
                         onTransactionTypeFilterChange(TransactionType.INCOME)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if(transactionTypeFilter == TransactionType.INCOME) PrimaryBlue else Color.White,
-                        contentColor = if(transactionTypeFilter == TransactionType.INCOME) Color.White else TextPrimary
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(
-                        width = if(transactionTypeFilter == TransactionType.INCOME) 0.dp else 1.dp,
-                        color = InputFieldBorder
-                    ),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Text(
-                        text = "Income",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-
-                Button(
+                    text = "Income",
+                    transactionTypeFilter = transactionTypeFilter,
+                    filterType = TransactionType.INCOME
+                )
+                FilterButton(
                     onClick = {
                         onTransactionTypeFilterChange(TransactionType.EXPENSE)
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if(transactionTypeFilter == TransactionType.EXPENSE) PrimaryBlue else Color.White,
-                        contentColor = if(transactionTypeFilter == TransactionType.EXPENSE) Color.White else TextPrimary
-                    ),
-                    shape = RoundedCornerShape(12.dp),
-                    border = BorderStroke(
-                        width = if(transactionTypeFilter == TransactionType.EXPENSE) 0.dp else 1.dp,
-                        color = InputFieldBorder
-                    ),
-                    modifier = Modifier.height(36.dp)
-                ) {
-                    Text(
-                        text = "Expense",
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
+                    text = "Expense",
+                    transactionTypeFilter = transactionTypeFilter,
+                    filterType = TransactionType.EXPENSE
+                )
             }
         }
         Spacer(Modifier.height(6.dp))
+    }
+}
+
+@Composable
+private fun FilterButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    transactionTypeFilter: TransactionType?,
+    filterType: TransactionType?,
+    onClick: (TransactionType?) -> Unit
+) {
+    Button(
+        onClick = {
+            onClick(filterType)
+        },
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if(transactionTypeFilter == filterType) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = if(transactionTypeFilter == filterType) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(
+            width = if(transactionTypeFilter == null) 0.dp else 1.dp,
+            color = MaterialTheme.colorScheme.outline
+        ),
+        modifier = modifier.height(36.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium
+        )
     }
 }

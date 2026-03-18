@@ -1,6 +1,5 @@
 package com.oms.spendwise.features.transaction.stats
 
-import android.content.Context
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -75,6 +74,7 @@ fun StatsScreen(
     statsScreenViewModel: StatsScreenViewModel,
     transactionViewModel: TransactionViewModel
 ) {
+    var isForwardAnimation by remember { mutableStateOf(true) }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -84,7 +84,13 @@ fun StatsScreen(
                 onCalenderClick = onCalendarClick,
                 selectedTab = statsScreenViewModel.selectedTab,
                 tabs = statsScreenViewModel.topBarTabs,
-                onTabClick = {statsScreenViewModel.onTopBarItemChange(it)}
+                onTabClick = {
+                    if(it.weight > statsScreenViewModel.selectedTab.weight)
+                        isForwardAnimation = true
+                    else
+                        isForwardAnimation = false
+                    statsScreenViewModel.onTopBarItemChange(it)
+                }
 
             )
         }
@@ -97,8 +103,12 @@ fun StatsScreen(
             AnimatedContent(
                 targetState = statsScreenViewModel.selectedTab,
                 transitionSpec = {
-                    slideInHorizontally { width -> width } + fadeIn() togetherWith
-                            slideOutHorizontally { width -> -width } + fadeOut()
+                    if(isForwardAnimation)
+                        slideInHorizontally { width -> width } + fadeIn() togetherWith
+                                slideOutHorizontally { width -> -width } + fadeOut()
+                    else
+                        slideInHorizontally { width -> -width } + fadeIn() togetherWith
+                                slideOutHorizontally { width -> width } + fadeOut()
                 },
                 label = ""
             ) { target ->
@@ -238,7 +248,7 @@ fun IncomeExpenseCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -254,13 +264,13 @@ fun IncomeExpenseCard(
                     text = titleText,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = formattedAmount,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -307,7 +317,7 @@ private fun TotalBalanceCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     ) {
@@ -323,13 +333,13 @@ private fun TotalBalanceCard(
                     text = "NET BALANCE",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = formattedBalance,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.displaySmall,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -388,7 +398,7 @@ private fun TopBar(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             IconButton(
@@ -398,7 +408,8 @@ private fun TopBar(
                     painter = painterResource(R.drawable.icon_calendar),
                     contentDescription = "calendar",
                     modifier = Modifier
-                        .size(18.dp)
+                        .size(18.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -429,7 +440,7 @@ private fun TopBar(
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 0.5.dp,
-            color = Color.LightGray
+            color = MaterialTheme.colorScheme.outlineVariant
         )
         Spacer(Modifier.height(6.dp))
     }
@@ -456,14 +467,15 @@ private fun TopBarTabItem(
             text = text,
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
-            color = if(isSelected) PrimaryBlue else TextSecondary
+            color = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         if(isSelected)
             HorizontalDivider(
                 modifier = Modifier.fillMaxWidth(),
-                thickness = 2.dp,
-                color = PrimaryBlue)
+                thickness = 3.dp,
+                color = MaterialTheme.colorScheme.primary
+            )
     }
 }
 
@@ -495,7 +507,7 @@ fun PieChart(
 
 
     val animateRotation by animateFloatAsState(
-        targetValue = if (animationPlayed) 90f * 11f else 0f,
+        targetValue = if (animationPlayed) 90f * 3f else 0f,
         animationSpec = tween(
             durationMillis = animDuration,
             delayMillis = 0,
@@ -512,7 +524,7 @@ fun PieChart(
         modifier = Modifier.fillMaxWidth()
             .padding(horizontal = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -532,7 +544,7 @@ fun PieChart(
                 text = if(type == TransactionType.EXPENSE) "Expense Breakdown" else "Income Breakdown",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(Modifier.height(24.dp))
@@ -549,13 +561,13 @@ fun PieChart(
                     Text(
                         text = if(type == TransactionType.EXPENSE) "Total Spending" else "Total Income",
                         style = MaterialTheme.typography.labelLarge,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal
                     )
                     Text(
                         text = "${currency.symbol}${AmountFormatter.formatAmount(totalSum)}",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextPrimary,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -655,7 +667,7 @@ fun DetailsPieChartItem(
                     text = data.first.name,
                     fontWeight = FontWeight.Medium,
                     style = MaterialTheme.typography.labelLarge,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -663,7 +675,7 @@ fun DetailsPieChartItem(
                 text = currency.symbol + AmountFormatter.formatDecimal(data.second) + "(${round(((data.second / total) * 100) * 100) / 100}%)",
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.bodyLarge,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onSurface
             )
 
         }

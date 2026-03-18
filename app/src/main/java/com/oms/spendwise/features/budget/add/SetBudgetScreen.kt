@@ -63,11 +63,11 @@ import androidx.compose.ui.unit.sp
 import com.oms.spendwise.R
 import com.oms.spendwise.features.budget.BudgetViewModel
 import com.oms.spendwise.model.entity.Category
-import com.oms.spendwise.ui.theme.ChartGreen
+import com.oms.spendwise.ui.theme.SuccessGreen
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.InputFieldContainer
 import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.RedButton
+import com.oms.spendwise.ui.theme.AlertRed
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
 import com.oms.spendwise.utils.AmountFormatter
@@ -92,8 +92,8 @@ fun SetBudgetScreen(
     var budgetDuration by remember { mutableStateOf(budgetVM.getDays(startDate, endDate)) }
     var amount by remember { mutableStateOf("") }
     val selectedCategoryList = remember { mutableStateListOf<Pair<Category, String>>() }
-    var remainingAllocation by mutableStateOf(0.0)
-    var isNewBudgetCategoryAdded by mutableStateOf(false)
+    var remainingAllocation by remember { mutableStateOf(0.0) }
+    var isNewBudgetCategoryAdded by remember { mutableStateOf(false) }
 
     LaunchedEffect(startDate, endDate) {
         budgetDuration = budgetVM.getDays(startDate, endDate)
@@ -324,7 +324,7 @@ private fun AllocationDetailsSection(
         Text(
             text = "ALLOCATION DETAILS",
             style = MaterialTheme.typography.labelSmall,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold,
         )
 
@@ -340,12 +340,12 @@ private fun AllocationDetailsSection(
                 Text(
                     text = "Remaining to allocate",
                     style = MaterialTheme.typography.labelSmall,
-                    color = TextSecondary.copy(alpha = 0.6f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
                 Text(
                     text = "${currency.symbol}${AmountFormatter.formatAmount(remainingToAllocate)}",
                     style = MaterialTheme.typography.labelMedium,
-                    color = if(remainingToAllocate > 0) PrimaryBlue else if(remainingToAllocate < 0) RedButton else ChartGreen,
+                    color = if(remainingToAllocate > 0) MaterialTheme.colorScheme.primary else if(remainingToAllocate < 0) AlertRed else SuccessGreen,
                     fontWeight = FontWeight.Bold
 
                 )
@@ -388,7 +388,7 @@ private fun AllocationDetailsSection(
                 Text(
                     text = "No Category Selected",
                     style = MaterialTheme.typography.labelLarge,
-                    color = TextSecondary.copy(alpha = 0.5f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                     fontWeight = FontWeight.Bold,
                 )
             }
@@ -419,7 +419,7 @@ private fun BudgetCategoryItem(
             .padding(2.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     ){
@@ -464,7 +464,7 @@ private fun BudgetCategoryItem(
                 Text(
                     text = category.name,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -482,8 +482,8 @@ private fun BudgetCategoryItem(
                 maxLines = 1,
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = InputFieldContainer.copy(alpha = 0.8f),
-                    unfocusedContainerColor = InputFieldContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = Color.Transparent,
                     focusedBorderColor = Color.Transparent
                 ),
@@ -499,7 +499,7 @@ private fun BudgetCategoryItem(
                         text = currency.symbol,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 },
 
@@ -524,7 +524,7 @@ private fun SelectCategorySection(
         Text(
             text = "SELECT CATEGORY",
             style = MaterialTheme.typography.labelSmall,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding)
         )
@@ -564,7 +564,7 @@ private fun SelectCategorySection(
                             .clickable { onSelectedCategoryChange(category) }
                             .border(
                                 width = 2.dp,
-                                color = if (selectedCategoryIdList.contains(category.categoryId)) PrimaryBlue else Color.Transparent,
+                                color = if (selectedCategoryIdList.contains(category.categoryId)) MaterialTheme.colorScheme.primary else Color.Transparent,
                                 shape = RoundedCornerShape(12.dp)
                             ),
                         contentAlignment = Alignment.Center
@@ -579,7 +579,7 @@ private fun SelectCategorySection(
                     Text(
                         text = category.name,
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -604,7 +604,7 @@ private fun AmountSection(
             text = "TOTAL BUDGET",
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.labelLarge,
-            color = TextSecondary
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Row(
@@ -620,8 +620,8 @@ private fun AmountSection(
                 },
                 maxLines = 1,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = InputFieldContainer.copy(alpha = 0.2f),
-                    unfocusedContainerColor = InputFieldContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(Dimens.InputFieldCornerRadius),
@@ -634,7 +634,7 @@ private fun AmountSection(
                 leadingIcon = {
                     Text(
                         text = currency.symbol,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold,
                         fontSize = 22.sp
                     )
@@ -658,7 +658,7 @@ private fun BudgetDurationSelectSection(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(shape = RoundedCornerShape(10.dp))
-                .background(color = InputFieldContainer)
+                .background(color = MaterialTheme.colorScheme.surfaceVariant)
                 .padding(horizontal = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(2.dp)
@@ -701,8 +701,8 @@ private fun BudgetDurationButton(
         onClick = onClick,
         shape = RoundedCornerShape(cornerSize),
         colors = ButtonDefaults.buttonColors(
-            containerColor = if(isSelected) Color.White else Color.Transparent,
-            contentColor = if(isSelected) PrimaryBlue else TextSecondary
+            containerColor = if(isSelected) MaterialTheme.colorScheme.surface else Color.Transparent,
+            contentColor = if(isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
@@ -736,7 +736,7 @@ private fun TopBar(
                 painter = painterResource(R.drawable.icon_cross),
                 contentDescription = "Close",
                 modifier = Modifier.size(18.dp),
-                tint = TextPrimary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -744,7 +744,7 @@ private fun TopBar(
             text = "Set Budget",
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Box(Modifier.size(42.dp))

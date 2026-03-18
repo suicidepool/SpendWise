@@ -49,6 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.oms.spendwise.R
+import com.oms.spendwise.features.components.DeleteDialog
 import com.oms.spendwise.model.entity.BudgetCategory
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.entity.Transaction
@@ -57,7 +58,8 @@ import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.ExpenseRed
 import com.oms.spendwise.ui.theme.PrimaryBlue
 import com.oms.spendwise.ui.theme.PrimaryBlueLight
-import com.oms.spendwise.ui.theme.RedButton
+import com.oms.spendwise.ui.theme.AlertRed
+import com.oms.spendwise.ui.theme.ChartBlue
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
 import com.oms.spendwise.utils.AmountFormatter
@@ -143,6 +145,8 @@ fun BudgetScreen(
 
             if(showDeleteDialog){
                 DeleteDialog(
+                    title = "Delete Budget?",
+                    description = "This action cannot be undone.",
                     onConfirm = {
                         budgetVM.deleteBudget()
                         showDeleteDialog = false
@@ -178,7 +182,7 @@ private fun CategoryBudgetSection(
             Text(
                 text = "Category Budgets",
                 style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Black
             )
         }
@@ -194,7 +198,7 @@ private fun CategoryBudgetSection(
                 Text(
                     text = "Not Category Budget has set",
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary.copy(alpha = 0.4f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -258,7 +262,7 @@ private fun BudgetCategoryItem(
             .padding(1.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp),
     ){
@@ -291,13 +295,13 @@ private fun BudgetCategoryItem(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(if(amountSpent < amountLimit) iconColor.copy(0.17f) else ExpenseRed.copy(0.17f)),
+                        .background(if(amountSpent < amountLimit) iconColor.copy(0.17f) else MaterialTheme.colorScheme.error.copy(0.17f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(iconId),
                         contentDescription = "Confirm",
-                        tint = if(amountSpent >= amountLimit) ExpenseRed else iconColor,
+                        tint = if(amountSpent >= amountLimit) MaterialTheme.colorScheme.error else iconColor,
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -317,14 +321,14 @@ private fun BudgetCategoryItem(
                             Text(
                                 text = category.name,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = TextPrimary,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontWeight = FontWeight.Bold
                             )
                             if(amountSpent >= amountLimit)
                             Icon(
                                 painter = painterResource(R.drawable.icon_warning),
                                 contentDescription = "exceed",
-                                tint = ExpenseRed,
+                                tint = MaterialTheme.colorScheme.error,
                                 modifier = Modifier
                                     .size(12.dp)
                             )
@@ -332,7 +336,7 @@ private fun BudgetCategoryItem(
                         Text(
                             text = "${currency.symbol}${if(isAnimationCompleted) amountSpentFormattedString else (amountSpent * animationProgress).toInt()} / ${currency.symbol}${amountLimitFormattedString}",
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if(amountSpent < amountLimit) TextPrimary else ExpenseRed,
+                            color = if(amountSpent < amountLimit) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                             fontWeight = FontWeight.Bold
                         )
 
@@ -354,7 +358,7 @@ private fun BudgetCategoryItem(
 
                         if(progress != 0f)
                         drawLine(
-                            color = if(amountSpent >= amountLimit) ExpenseRed else iconColor,
+                            color = if(amountSpent >= amountLimit) AlertRed else iconColor,
                             start = Offset(0f, size.height / 2),
                             end = Offset(size.width * (progress * animationProgress), size.height / 2),
                             strokeWidth = 6.dp.toPx(),
@@ -409,7 +413,7 @@ private fun BudgetCard(
         modifier = modifier
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp),
         shape = RoundedCornerShape(Dimens.CardCornerRadius)
@@ -426,13 +430,13 @@ private fun BudgetCard(
                     text = "REMAINING BALANCE",
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Bold,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = "${if(remainingBalance<0) "-" else ""}${currency.symbol}${if(isAnimationCompleted) remainingBalanceFormattedString else round((remainingBalanceMod * animationProgress) * 100)/100}",
                     style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             Spacer(Modifier.height(18.dp))
@@ -448,13 +452,13 @@ private fun BudgetCard(
                         text = "Spent: ${currency.symbol}${if(isAnimationCompleted) amountSpentFormattedString else round((balanceSpent * animationProgress) * 100)/100}",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Text(
                         text = "Limit: ${currency.symbol}$amountLimitFormattedString",
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -474,7 +478,7 @@ private fun BudgetCard(
 
                     if(progress != 0f)
                     drawLine(
-                        color = if(balanceSpent >= balanceLimit) ExpenseRed else PrimaryBlue,
+                        color = if(balanceSpent >= balanceLimit) AlertRed else ChartBlue,
                         start = Offset(0f, size.height / 2),
                         end = Offset(size.width * (progress * animationProgress), size.height / 2),
                         strokeWidth = 12.dp.toPx(),
@@ -491,7 +495,7 @@ private fun BudgetCard(
                         text = "${if(isAnimationCompleted) percentSpent else round((percentSpent * animationProgress) * 100)/100}% of budget used",
                         style = MaterialTheme.typography.labelMedium,
                         fontWeight = FontWeight.SemiBold,
-                        color = TextSecondary.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                     )
                 }
             }
@@ -499,49 +503,6 @@ private fun BudgetCard(
     }
 }
 
-@Composable
-private fun DeleteDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = BackgroundElevated,
-        shape = RoundedCornerShape(22.dp),
-        title = {
-            Text(
-                text = "Delete Budget?",
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                text = "This action cannot be undone.",
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = RedButton
-                )
-            ) {
-                Text("Delete")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Gray
-                )
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
-}
 
 @Composable
 private fun AddBudgetSection(
@@ -584,13 +545,13 @@ private fun TopBar(
         horizontalArrangement = if(isBudgetAdded) Arrangement.SpaceBetween else Arrangement.Center
     ) {
         if(isBudgetAdded)
-        Box(Modifier.size(42.dp))
+            Box(Modifier.size(42.dp))
 
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Black,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         if(isBudgetAdded)
@@ -602,20 +563,20 @@ private fun TopBar(
                     painter = painterResource(R.drawable.icon_menu_dots),
                     contentDescription = "Close",
                     modifier = Modifier.size(18.dp),
-                    tint = TextPrimary
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
             DropdownMenu(
                 expanded = showMenu,
                 onDismissRequest = {showMenu = false},
-                modifier = Modifier.background(color = Color.White)
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.surface)
             ) {
                 DropdownMenuItem(
                     trailingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.icon_create),
                             contentDescription = "edit",
-                            tint = TextPrimary,
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier
                                 .size(14.dp)
                         )
@@ -623,7 +584,7 @@ private fun TopBar(
                     text = {
                         Text(
                             text = "Edit",
-                            color = TextPrimary
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     },
                     onClick = {
@@ -637,7 +598,7 @@ private fun TopBar(
                         Icon(
                             painter = painterResource(R.drawable.icon_trashbin),
                             contentDescription = "delete",
-                            tint = RedButton,
+                            tint = MaterialTheme.colorScheme.error,
                             modifier = Modifier
                                 .size(14.dp)
                         )
@@ -645,7 +606,7 @@ private fun TopBar(
                     text = {
                         Text(
                             text = "Delete",
-                            color = RedButton
+                            color = MaterialTheme.colorScheme.error
                         )
                     },
                     onClick = {

@@ -46,13 +46,14 @@ import com.oms.spendwise.features.profile.ProfileViewModel
 import com.oms.spendwise.model.entity.User
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.RedButton
+import com.oms.spendwise.ui.theme.AlertRed
 import com.oms.spendwise.ui.theme.TextPrimary
 import com.oms.spendwise.ui.theme.TextSecondary
 import com.oms.spendwise.utils.formatDate
 import java.time.LocalDate
 import java.util.Currency
 import androidx.core.net.toUri
+import com.oms.spendwise.features.components.DeleteDialog
 import com.oms.spendwise.ui.theme.BackgroundElevated
 
 @Composable
@@ -89,7 +90,9 @@ fun ProfileScreen(
                     onEditProfileClick = onEditProfileClick
                 )
                 if(showResetDataDialog)
-                    ClearAllDataDialog(
+                    DeleteDialog(
+                        title = "Delete all Data?",
+                        description = "This action cannot be undone.",
                         onConfirm = {
                             resetAllData()
                             showResetDataDialog = false
@@ -103,49 +106,6 @@ fun ProfileScreen(
     }
 }
 
-@Composable
-private fun ClearAllDataDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = BackgroundElevated,
-        shape = RoundedCornerShape(22.dp),
-        title = {
-            Text(
-                text = "Delete all Data?",
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                text = "This action cannot be undone.",
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = RedButton
-                )
-            ) {
-                Text("Confirm")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Gray
-                )
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
-}
 
 @Composable
 fun UserDetailsSection(
@@ -187,7 +147,7 @@ private fun PreferencesSection(
         Text(
             text = "PREFERENCES",
             style = MaterialTheme.typography.labelMedium,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(12.dp))
@@ -213,7 +173,7 @@ private fun SystemAndDataSection(
         Text(
             text = "SYSTEM & DATA",
             style = MaterialTheme.typography.labelMedium,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(12.dp))
@@ -225,7 +185,7 @@ private fun SystemAndDataSection(
                     onClick = onEditProfileClick
                 ),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             elevation = CardDefaults.cardElevation(2.dp)
         )
@@ -259,13 +219,13 @@ private fun SystemAndDataSection(
                     Text(
                         text = "Edit Profile",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "Change Profile Details",
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary.copy(alpha = 0.8f)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -279,7 +239,7 @@ private fun SystemAndDataSection(
                     onClick = onResetDataClick
                 ),
             colors = CardDefaults.cardColors(
-                containerColor = Color.White
+                containerColor = MaterialTheme.colorScheme.surface
             ),
             elevation = CardDefaults.cardElevation(2.dp)
         )
@@ -296,13 +256,13 @@ private fun SystemAndDataSection(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(RedButton.copy(alpha = 0.1f)),
+                        .background(AlertRed.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.icon_trashbin),
                         contentDescription = null,
-                        tint = RedButton,
+                        tint = AlertRed,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -313,13 +273,13 @@ private fun SystemAndDataSection(
                     Text(
                         text = "Reset All Data",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = RedButton,
+                        color = AlertRed,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = "This action cannot be undone",
                         style = MaterialTheme.typography.labelSmall,
-                        color = RedButton.copy(alpha = 0.8f)
+                        color = AlertRed.copy(alpha = 0.8f)
                     )
                 }
             }
@@ -341,7 +301,7 @@ private fun PreferenceItem(
             .padding(1.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     ){
@@ -367,7 +327,7 @@ private fun PreferenceItem(
                     Icon(
                         painter = painterResource(icon),
                         contentDescription = null,
-                        tint = PrimaryBlue,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -378,13 +338,13 @@ private fun PreferenceItem(
                     Text(
                         text = title,
                         style = MaterialTheme.typography.bodyLarge,
-                        color = TextPrimary,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = description,
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -392,7 +352,7 @@ private fun PreferenceItem(
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                color = PrimaryBlue,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -408,7 +368,7 @@ private fun BirthDate(
     Box(
         modifier = modifier
             .background(
-                color = PrimaryBlue.copy(alpha = 0.1f),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 shape = RoundedCornerShape(20.dp)
             ),
         contentAlignment = Alignment.Center
@@ -423,13 +383,13 @@ private fun BirthDate(
                 painter = painterResource(R.drawable.icon_cake),
                 contentDescription = null,
                 modifier = Modifier.size(14.dp),
-                tint = PrimaryBlue
+                tint = MaterialTheme.colorScheme.primary
             )
             Text(
                 text = formatDate(dob),
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelSmall,
-                color = PrimaryBlue
+                color = MaterialTheme.colorScheme.primary
             )
         }
     }
@@ -484,7 +444,7 @@ private fun TopBar(
             text = "Profile",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

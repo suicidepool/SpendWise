@@ -143,13 +143,13 @@ fun TodayTransactionSection(
             Text(
                 text = "Today's Transactions",
                 style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Black
             )
             Text(
                 text = "See All",
                 style = MaterialTheme.typography.labelMedium,
-                color = PrimaryBlue,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .clickable(
@@ -169,7 +169,7 @@ fun TodayTransactionSection(
                 Text(
                     text = "No transaction has done today",
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary.copy(alpha = 0.4f),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -205,7 +205,7 @@ private fun TransactionItem(
             .padding(2.dp)
             .fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp),
         onClick = onClick
@@ -235,14 +235,14 @@ private fun TransactionItem(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(RoundedCornerShape(14.dp))
-                        .background(iconColor.copy(0.17f)),
+                        .background(iconColor.copy(0.21f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(iconId),
                         contentDescription = "Confirm",
                         tint = iconColor,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(18.dp)
                     )
                 }
 
@@ -252,13 +252,13 @@ private fun TransactionItem(
                     Text(
                         text = category.name,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextPrimary,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
                         text = formatTime(transaction.transactionDateTime.toLocalTime()),
                         style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -304,13 +304,13 @@ private fun ThisMonthSummerySection(
             Text(
                 text = "This month summery",
                 style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Black
             )
             Text(
                 text = month,
                 style = MaterialTheme.typography.labelMedium,
-                color = PrimaryBlue,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 fontWeight = FontWeight.SemiBold
             )
         }
@@ -383,7 +383,7 @@ fun MonthlySummeryCard(
         modifier = modifier
             .padding(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(2.dp)
     )
@@ -417,14 +417,14 @@ fun MonthlySummeryCard(
                 Text(
                     text = titleText,
                     style = MaterialTheme.typography.labelMedium,
-                    color = PrimaryBlueLight,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     fontWeight = FontWeight.SemiBold
                 )
             }
             Text(
                 text = "${currency.symbol}${if(isAnimationCompleted) formattedAmount else round((amount * animationProgress) * 100) / 100}",
                 style = MaterialTheme.typography.titleLarge,
-                color = TextPrimary,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold
             )
 
@@ -472,7 +472,7 @@ private fun TotalBalanceCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = PrimaryBlue
+            containerColor = MaterialTheme.colorScheme.primary
         ),
     ) {
         Column(
@@ -487,13 +487,13 @@ private fun TotalBalanceCard(
                     text = "Total Balance",
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.labelMedium,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "${if(balance<0) "-" else ""}${currency.symbol}${if(isAnimationCompleted) balanceFormattedString else round((balanceMod * animationProgress) * 100) / 100}",
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.displaySmall,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -504,7 +504,7 @@ private fun TotalBalanceCard(
                 Row(
                     modifier = Modifier
                         .background(
-                            color = PrimaryBlueLight,
+                            color = MaterialTheme.colorScheme.secondary,
                             shape = RoundedCornerShape(20.dp)
                         ),
                     verticalAlignment = Alignment.CenterVertically,
@@ -514,16 +514,16 @@ private fun TotalBalanceCard(
                     Icon(
                         painter = if(incrementFromLastMonth < 0) painterResource(R.drawable.icon_arrow_trend_down)
                         else painterResource(R.drawable.icon_arrow_trend_up),
-                        contentDescription = null,
-                        modifier = Modifier.size(12.dp),
-                        tint = Color.White
+                        contentDescription = "trend",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(12.dp)
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
                         text = bottomLabelText,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.labelSmall,
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Spacer(Modifier.width(8.dp))
                 }
@@ -531,7 +531,7 @@ private fun TotalBalanceCard(
                     text = "From last month",
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

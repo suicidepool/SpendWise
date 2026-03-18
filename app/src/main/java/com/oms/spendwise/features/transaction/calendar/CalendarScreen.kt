@@ -49,17 +49,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.oms.spendwise.R
 import com.oms.spendwise.features.transaction.TransactionViewModel
-import com.oms.spendwise.ui.theme.CardBorder
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.ExpenseRed
 import com.oms.spendwise.ui.theme.IncomeGreen
-import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.utils.AmountFormatter
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.util.Currency
@@ -171,8 +169,11 @@ private fun MonthlyOverviewCard(
             .fillMaxWidth(),
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
+        val balance = income - expense
+        val balanceMod = if(balance < 0) balance * (-1) else balance
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -188,20 +189,22 @@ private fun MonthlyOverviewCard(
             ) {
                 Text(
                     text = "INCOME",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp
                 )
                 Text(
-                    text = "${currency.symbol}${income}",
+                    text = "${currency.symbol}${AmountFormatter.formatAmount(income)}",
                     color = IncomeGreen,
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center
                 )
             }
             VerticalDivider(
                 modifier = Modifier
-                    .height(30.dp),
+                    .height(36.dp)
+                    .padding(horizontal = 8.dp),
                 thickness = 1.dp,
-                color = CardBorder
+                color = MaterialTheme.colorScheme.outlineVariant
             )
             Column(
                 modifier = Modifier
@@ -211,20 +214,22 @@ private fun MonthlyOverviewCard(
             ) {
                 Text(
                     text = "EXPENSE",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp
                 )
                 Text(
-                    text = "${currency.symbol}${expense}",
+                    text = "${currency.symbol}${AmountFormatter.formatAmount(expense)}",
                     color = ExpenseRed,
-                    style = MaterialTheme.typography.labelLarge
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center
                 )
             }
             VerticalDivider(
                 modifier = Modifier
-                    .height(30.dp),
+                    .height(36.dp)
+                    .padding(horizontal = 8.dp),
                 thickness = 1.dp,
-                color = CardBorder
+                color = MaterialTheme.colorScheme.outlineVariant
             )
             Column(
                 modifier = Modifier
@@ -234,13 +239,14 @@ private fun MonthlyOverviewCard(
             ) {
                 Text(
                     text = "BALANCE",
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 10.sp
                 )
                 Text(
-                    text = "${currency.symbol}${income+expense}",
-                    color = PrimaryBlue,
-                    style = MaterialTheme.typography.labelLarge
+                    text = "${if(balance < 0) "-" else ""}${currency.symbol}${AmountFormatter.formatAmount(balanceMod)}",
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center
                 )
             }
         }
@@ -289,7 +295,7 @@ private fun Calendar(
                 ){
                     Text(
                         text = label,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.labelLarge
                     )
                 }
@@ -344,11 +350,11 @@ fun CalendarDateCard(
             .padding(2.dp),
         elevation = CardDefaults.cardElevation(1.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(
             width = 1.dp,
-            color = if(date == LocalDate.now()) PrimaryBlue else Color.Transparent
+            color = if(date == LocalDate.now()) MaterialTheme.colorScheme.primary else Color.Transparent
         )
     ) {
         Column(
@@ -364,7 +370,8 @@ fun CalendarDateCard(
             Text(
                 text = date.dayOfMonth.toString(),
                 fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
             if(income.isNotEmpty())
                 Box(
@@ -435,7 +442,7 @@ private fun TopBar(
                 painter = painterResource(R.drawable.icon_back_arrow),
                 contentDescription = "back",
                 modifier = Modifier.size(28.dp),
-                tint = TextPrimary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -450,7 +457,7 @@ private fun TopBar(
                     painter = painterResource(R.drawable.icon_back),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = TextSecondary
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -458,7 +465,7 @@ private fun TopBar(
                 text = yearMonth,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             IconButton(
@@ -468,7 +475,7 @@ private fun TopBar(
                     painter = painterResource(R.drawable.icon_forward),
                     contentDescription = null,
                     modifier = Modifier.size(16.dp),
-                    tint = TextSecondary
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

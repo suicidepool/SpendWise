@@ -67,12 +67,7 @@ import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import com.oms.spendwise.R
 import com.oms.spendwise.features.profile.ProfileViewModel
-import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.Dimens
-import com.oms.spendwise.ui.theme.InputFieldContainer
-import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.PrimaryBlueLight
-import com.oms.spendwise.ui.theme.TextPrimary
 import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
@@ -165,7 +160,7 @@ private fun TopBar(
                         onClick = onBack
                     )
                     .padding(PaddingValues(0.dp)),
-                tint = PrimaryBlue
+                tint = MaterialTheme.colorScheme.primary
             )
     }
 }
@@ -202,13 +197,15 @@ private fun TitlePart(
         Text(
             text = "Complete Profile",
             style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Text(
             text = "Set up your profile to get started",
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -332,8 +329,8 @@ fun ProfileInfoInputSection(
                     showModalBottomSheet = true
                 },
                 colors = IconButtonDefaults.filledIconButtonColors(
-                    contentColor = BackgroundPrimary,
-                    containerColor = PrimaryBlue
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 modifier = Modifier.size(24.dp)
             ) {
@@ -350,8 +347,8 @@ fun ProfileInfoInputSection(
             ModalBottomSheet(
                 onDismissRequest = {showModalBottomSheet = false},
                 sheetState = sheetState,
-                containerColor = BackgroundPrimary,
-                contentColor = TextPrimary
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 Column(
                     modifier = Modifier
@@ -365,6 +362,7 @@ fun ProfileInfoInputSection(
                     Text(
                         text = "Choose Option",
                         style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Spacer(Modifier.height(12.dp))
                     profileImage?.let{
@@ -381,7 +379,7 @@ fun ProfileInfoInputSection(
                             Icon(
                                 painter = painterResource(R.drawable.icon_cross),
                                 contentDescription = "Choose from Gallery",
-                                tint = PrimaryBlue,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
                             Text(
@@ -404,7 +402,7 @@ fun ProfileInfoInputSection(
                         Icon(
                             painter = painterResource(R.drawable.icon_camera),
                             contentDescription = "Take Photo",
-                            tint = PrimaryBlue,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
@@ -425,7 +423,7 @@ fun ProfileInfoInputSection(
                         Icon(
                             painter = painterResource(R.drawable.icon_picture),
                             contentDescription = "Choose from Gallery",
-                            tint = PrimaryBlue,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(18.dp)
                         )
                         Text(
@@ -446,7 +444,7 @@ fun ProfileInfoInputSection(
             Text(
                 text = "Name",
                 style = MaterialTheme.typography.labelMedium,
-                color = PrimaryBlueLight,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 4.dp)
             )
             OutlinedTextField(
@@ -459,8 +457,8 @@ fun ProfileInfoInputSection(
                 },
                 maxLines = 1,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = InputFieldContainer.copy(alpha = 0.2f),
-                    unfocusedContainerColor = InputFieldContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(Dimens.InputFieldCornerRadius),
@@ -480,7 +478,7 @@ fun ProfileInfoInputSection(
             Text(
                 text = "Date of birth",
                 style = MaterialTheme.typography.labelMedium,
-                color = PrimaryBlueLight,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 4.dp)
             )
             OutlinedTextField(
@@ -505,8 +503,8 @@ fun ProfileInfoInputSection(
                 },
                 maxLines = 1,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = InputFieldContainer.copy(alpha = 0.2f),
-                    unfocusedContainerColor = InputFieldContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedBorderColor = Color.Transparent
                 ),
                 shape = RoundedCornerShape(Dimens.InputFieldCornerRadius),
@@ -533,7 +531,7 @@ fun ProfileInfoInputSection(
                     TextButton(onClick = toggleDatePicker) {
                         Text("Cancel")
                     }
-                },
+                }
             ) {
                 DatePicker(state = datePickerState)
             }
@@ -550,7 +548,7 @@ fun ProfileInfoInputSection(
             Text(
                 text = "Currency",
                 style = MaterialTheme.typography.labelMedium,
-                color = PrimaryBlueLight,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(start = 4.dp)
             )
 
@@ -566,8 +564,8 @@ fun ProfileInfoInputSection(
                         ExposedDropdownMenuDefaults.TrailingIcon(expanded = showCurrencyDropdown)
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = InputFieldContainer.copy(alpha = 0.2f),
-                        unfocusedContainerColor = InputFieldContainer,
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                         unfocusedBorderColor = Color.Transparent
                     ),
                     shape = RoundedCornerShape(Dimens.InputFieldCornerRadius),
@@ -579,12 +577,15 @@ fun ProfileInfoInputSection(
                 ExposedDropdownMenu(
                     expanded = showCurrencyDropdown,
                     onDismissRequest = {showCurrencyDropdown = false },
-                    containerColor = BackgroundPrimary
+                    containerColor = MaterialTheme.colorScheme.surface
                 ) {
                     currencyList.forEach {
                         DropdownMenuItem(
                             text = {
-                                Text("${it.symbol} ${it.currencyCode}")
+                                Text(
+                                    text = "${it.symbol} ${it.currencyCode}",
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             },
                             onClick = {
                                 onCurrencyChange(it)

@@ -136,13 +136,14 @@ private fun TopBar(
                 contentDescription = null,
                 modifier = Modifier
                     .size(26.dp),
-                tint = TextPrimary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
         Text(
             text = "Edit Profile",
             fontWeight = FontWeight.Bold,
-            style = MaterialTheme.typography.titleMedium
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(Modifier.size(32.dp))
     }

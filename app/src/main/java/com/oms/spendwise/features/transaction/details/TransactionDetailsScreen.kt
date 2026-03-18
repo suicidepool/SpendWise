@@ -3,17 +3,13 @@ package com.oms.spendwise.features.transaction.details
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -22,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -31,11 +26,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,27 +38,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.Group
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.size.Dimension
 import com.oms.spendwise.R
+import com.oms.spendwise.features.components.DeleteDialog
 import com.oms.spendwise.features.transaction.TransactionViewModel
 import com.oms.spendwise.model.entity.Category
 import com.oms.spendwise.model.entity.Transaction
 import com.oms.spendwise.model.enum.TransactionType
-import com.oms.spendwise.ui.theme.BackgroundElevated
 import com.oms.spendwise.ui.theme.Dimens
 import com.oms.spendwise.ui.theme.ExpenseRed
 import com.oms.spendwise.ui.theme.IncomeGreen
-import com.oms.spendwise.ui.theme.InputFieldBorder
 import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.RedButton
-import com.oms.spendwise.ui.theme.TextHint
-import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.ui.theme.AlertRed
 import com.oms.spendwise.utils.AmountFormatter
 import com.oms.spendwise.utils.formatDateTime
 import kotlinx.coroutines.launch
@@ -137,6 +122,8 @@ fun TransactionDetailsScreen(
                 }
                 if(showDialog)
                     DeleteDialog(
+                        title = "Delete Transaction?",
+                        description = "This action cannot be undone.",
                         onConfirm = {
                             scope.launch {
                                 transaction.let {
@@ -155,49 +142,6 @@ fun TransactionDetailsScreen(
     }
 }
 
-@Composable
-private fun DeleteDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        containerColor = BackgroundElevated,
-        shape = RoundedCornerShape(22.dp),
-        title = {
-            Text(
-                text = "Delete Transaction?",
-                color = TextPrimary
-            )
-        },
-        text = {
-            Text(
-                text = "This action cannot be undone.",
-                color = TextSecondary
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onConfirm,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = RedButton
-                )
-            ) {
-                Text("Delete")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismiss,
-                colors = ButtonDefaults.textButtonColors(
-                    contentColor = Color.Gray
-                )
-            ) {
-                Text("Cancel")
-            }
-        }
-    )
-}
 
 @Composable
 private fun BottomBar(
@@ -207,11 +151,12 @@ private fun BottomBar(
 ) {
     Column(
         modifier = modifier.fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surface)
     ) {
         HorizontalDivider(
             modifier = Modifier.fillMaxWidth(),
             thickness = 0.7.dp,
-            color = Color.LightGray.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.outlineVariant
         )
 
         Row(
@@ -227,8 +172,8 @@ private fun BottomBar(
                 shape = RoundedCornerShape(8.dp),
                 onClick = onEditClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryBlue.copy(.1f),
-                    contentColor = PrimaryBlue
+                    containerColor = MaterialTheme.colorScheme.primary.copy(.1f),
+                    contentColor = MaterialTheme.colorScheme.primary
                 ),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ){
@@ -236,13 +181,13 @@ private fun BottomBar(
                     painter = painterResource(R.drawable.icon_create),
                     contentDescription = null,
                     modifier = Modifier.size(18.dp),
-                    tint = PrimaryBlue
+                    tint = MaterialTheme.colorScheme.primary
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     text = "Edit Transaction",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = PrimaryBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -254,8 +199,8 @@ private fun BottomBar(
                 shape = RoundedCornerShape(8.dp),
                 onClick = onDeleteClick,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = RedButton.copy(.1f),
-                    contentColor = RedButton
+                    containerColor = AlertRed.copy(.1f),
+                    contentColor = AlertRed
                 ),
                 contentPadding = PaddingValues(vertical = 16.dp)
             ){
@@ -285,7 +230,7 @@ private fun InformationSection(
     ) {
         Text(
             text = "INFORMATION",
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 4.dp)
@@ -325,7 +270,7 @@ fun InformationItem(
         shape = RoundedCornerShape(Dimens.CardCornerRadius),
         elevation = CardDefaults.elevatedCardElevation(2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
         Row(
@@ -336,7 +281,7 @@ fun InformationItem(
             Box(
                 modifier = Modifier
                     .background(
-                        color = PrimaryBlue.copy(.1f),
+                        color = MaterialTheme.colorScheme.primary.copy(.2f),
                         shape = RoundedCornerShape(Dimens.CardCornerRadius)
                     )
                     .size(48.dp),
@@ -356,13 +301,13 @@ fun InformationItem(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.labelMedium,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f)
                 )
 
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyLarge,
-                    color = TextPrimary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.SemiBold
                 )
             }
@@ -389,9 +334,9 @@ private fun AmountSection(
                 .clip(RoundedCornerShape(50.dp))
                 .background(
                     color = if (transactionType == TransactionType.INCOME.value)
-                        IncomeGreen.copy(alpha = 0.3f)
+                        IncomeGreen.copy(alpha = 0.2f)
                     else
-                        ExpenseRed.copy(alpha = 0.3f)
+                        ExpenseRed.copy(alpha = 0.2f)
                 )
                 .padding(
                     horizontal = 16.dp,
@@ -413,7 +358,7 @@ private fun AmountSection(
         Text(
             text = "${if(transactionType == TransactionType.INCOME.value) "+" else "-"}${currency.symbol}${transactionAmount}",
             style = MaterialTheme.typography.displayMedium,
-            color = TextPrimary,
+            color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.Bold
         )
     }
@@ -438,7 +383,8 @@ private fun TopBar(
                 painter = painterResource(R.drawable.icon_back),
                 contentDescription = "back",
                 modifier = Modifier
-                    .size(16.dp)
+                    .size(16.dp),
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
 
@@ -446,7 +392,7 @@ private fun TopBar(
             text = title,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
-            color = TextPrimary
+            color = MaterialTheme.colorScheme.onBackground
         )
 
 

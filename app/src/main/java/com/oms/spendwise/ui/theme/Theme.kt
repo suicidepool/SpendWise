@@ -1,6 +1,5 @@
 package com.oms.spendwise.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -15,26 +14,27 @@ import androidx.compose.ui.platform.LocalContext
 private val DarkColorScheme = darkColorScheme(
 
     primary = PrimaryBlueLight,
-    onPrimary = Color.Black,
+    onPrimary = TextOnPrimaryDark,
     primaryContainer = PrimaryBlueDark,
-    onPrimaryContainer = Color.White,
+    onPrimaryContainer = Color(0xFFE5E7EB),
 
     secondary = ChartBlue,
-    onSecondary = Color.Black,
+    onSecondary = TextOnPrimaryDark,
 
     background = Color(0xFF0F172A),
     onBackground = Color(0xFFE5E7EB),
 
     surface = Color(0xFF1E293B),
-    onSurface = Color(0xFFE5E7EB),
+    onSurface = Color(0xFFE9ECF1),
 
     surfaceVariant = Color(0xFF334155),
-    onSurfaceVariant = Color(0xFFCBD5E1),
+    onSurfaceVariant = Color(0xFFC1CBD5),
 
     error = ExpenseRed,
-    onError = Color.White,
+    onError = Color(0xFFE5E7EB),
 
-    outline = Color(0xFF475569)
+    outline = OutlineColor,
+    outlineVariant = DividerColorDark
 )
 
 
@@ -43,10 +43,10 @@ private val LightColorScheme = lightColorScheme(
     primary = PrimaryBlue,
     onPrimary = TextOnPrimary,
     primaryContainer = PrimaryBlueLight,
-    onPrimaryContainer = Color.White,
+    onPrimaryContainer = TextOnPrimary,
 
     secondary = ChartBlue,
-    onSecondary = Color.White,
+    onSecondary = TextOnPrimary,
 
     background = BackgroundPrimary,
     onBackground = TextPrimary,
@@ -57,10 +57,11 @@ private val LightColorScheme = lightColorScheme(
     surfaceVariant = BackgroundElevated,
     onSurfaceVariant = TextSecondary,
 
-    error = ExpenseRed,
-    onError = Color.White,
+    error = AlertRed,
+    onError = TextOnPrimary,
 
-    outline = DividerColor
+    outline = OutlineColor,
+    outlineVariant = DividerColor
 )
 
 @Composable

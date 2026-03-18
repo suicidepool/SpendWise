@@ -12,11 +12,11 @@ class StatsScreenViewModel @Inject constructor() : ViewModel() {
 
     var selectedTab by mutableStateOf(TopBarTab.MONTH)
 
-    enum class TopBarTab(val value: String) {
-        DAY("Day"),
-        WEEK("Week"),
-        MONTH("Month"),
-        YEAR("Year")
+    enum class TopBarTab(val value: String, val weight: Int) {
+        DAY("Day", 1),
+        WEEK("Week", 2),
+        MONTH("Month", 3),
+        YEAR("Year", 4)
     }
 
     val topBarTabs = listOf(

@@ -1,7 +1,6 @@
 package com.oms.spendwise.features.transaction.calendar
 
 import android.content.Context
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,45 +11,31 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.oms.spendwise.R
 import com.oms.spendwise.features.transaction.TransactionViewModel
-import com.oms.spendwise.features.transaction.history.Overview
-import com.oms.spendwise.features.transaction.history.TransactionItem
+import com.oms.spendwise.features.transaction.components.Overview
+import com.oms.spendwise.features.transaction.components.TransactionItem
 import com.oms.spendwise.navigation.BottomNavigationItem
-import com.oms.spendwise.ui.theme.BackgroundPrimary
 import com.oms.spendwise.ui.theme.Dimens
-import com.oms.spendwise.ui.theme.PrimaryBlue
-import com.oms.spendwise.ui.theme.PrimaryBlueLight
-import com.oms.spendwise.ui.theme.TextPrimary
-import com.oms.spendwise.ui.theme.TextSecondary
+import com.oms.spendwise.utils.AmountFormatter
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Currency
@@ -91,8 +76,8 @@ fun DateDetailsScreen(
             if(transactions != null){
                 Overview(
                     modifier = Modifier.padding(horizontal = Dimens.HorizontalScreenPadding),
-                    totalIncome = "+${currency.symbol}${transactionViewModel.getTotalIncome(date)}",
-                    totalExpense = "-${currency.symbol}${transactionViewModel.getTotalExpense(date)}"
+                    totalIncome = "+${currency.symbol}${AmountFormatter.formatAmount(transactionViewModel.getTotalIncome(date))}",
+                    totalExpense = "-${currency.symbol}${AmountFormatter.formatAmount(transactionViewModel.getTotalExpense(date))}"
                 )
                 Spacer(Modifier.height(14.dp))
                 LazyColumn(
@@ -102,13 +87,13 @@ fun DateDetailsScreen(
                 ) {
                     items(transactions) { transaction ->
                         val transactionCategory = transactionViewModel.categories.find { it.categoryId == transaction.categoryId }!!
-                            TransactionItem(
-                                transaction = transaction,
-                                category = transactionCategory,
-                                currency = currency,
-                                context = context,
-                                onClick = {onItemClick(transaction.transactionId)}
-                            )
+                        TransactionItem(
+                            transaction = transaction,
+                            category = transactionCategory,
+                            currency = currency,
+                            context = context,
+                            onClick = {onItemClick(transaction.transactionId)}
+                        )
                             Spacer(Modifier.height(14.dp))
                     }
                     items(1){
@@ -126,13 +111,13 @@ fun DateDetailsScreen(
                         painter = painterResource(R.drawable.icon_scroll),
                         contentDescription = null,
                         modifier = Modifier.size(36.dp),
-                        tint = TextSecondary
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "No Transactions",
                         style = MaterialTheme.typography.labelLarge,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal
                     )
                 }
@@ -149,14 +134,14 @@ fun AddTransactionFab(
     Box(
         modifier = modifier
             .background(
-                color = PrimaryBlue,
+                color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(Dimens.CardCornerRadius)
             )
             .size(52.dp)
             .shadow(
                 elevation = 8.dp,
-                spotColor = PrimaryBlueLight,
-                ambientColor = PrimaryBlueLight,
+                spotColor = MaterialTheme.colorScheme.secondary,
+                ambientColor = MaterialTheme.colorScheme.secondary,
                 shape = RoundedCornerShape(Dimens.CardCornerRadius)
             )
             .clickable(
@@ -168,7 +153,7 @@ fun AddTransactionFab(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
-                    color = PrimaryBlue,
+                    color = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(Dimens.CardCornerRadius)
                 ),
             contentAlignment = Alignment.Center
@@ -177,7 +162,7 @@ fun AddTransactionFab(
                 painter = painterResource(BottomNavigationItem.Add.icon),
                 contentDescription = null,
                 modifier = Modifier.size(18.dp),
-                tint = BackgroundPrimary
+                tint = MaterialTheme.colorScheme.onPrimary
             )
         }
 
@@ -209,7 +194,8 @@ private fun TopBar(
                     painter = painterResource(R.drawable.icon_back),
                     contentDescription = "back",
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(16.dp),
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
 
@@ -217,7 +203,7 @@ private fun TopBar(
                 text = title,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = TextPrimary
+                color = MaterialTheme.colorScheme.onBackground
             )
 
             Spacer(Modifier.size(20.dp))
