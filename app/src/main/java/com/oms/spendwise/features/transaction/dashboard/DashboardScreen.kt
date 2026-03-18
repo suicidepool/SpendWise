@@ -487,7 +487,7 @@ private fun TotalBalanceCard(
                     text = "Total Balance",
                     fontWeight = FontWeight.Normal,
                     style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f)
                 )
                 Text(
                     text = "${if(balance<0) "-" else ""}${currency.symbol}${if(isAnimationCompleted) balanceFormattedString else round((balanceMod * animationProgress) * 100) / 100}",
